@@ -9,12 +9,11 @@ class Config:
     with environment variables when available.
     """
 
-    def __init__(self, config_file_path: str = "config.yaml"):
+    def __init__(self):
         """
         Initialize the configuration manager.
 
         Args:
             config_file_path: Path to the YAML configuration file. Defaults to "config.yaml".
         """
-        # Load environment variables from .env file if it exists
         load_dotenv()
