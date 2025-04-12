@@ -5,6 +5,9 @@ from PIL import Image
 import pytesseract
 import io
 import xml.etree.ElementTree as ET
+import base64
+import io
+import pymupdf
 from pathlib import Path
 
 # === Configuration API ===
@@ -22,6 +25,8 @@ payload = {
 
 response = requests.post(api_url, headers=headers, json=payload)
 response_data = response.json()
+
+print(response_data)
 
 # === Traitement du passeport ===
 passport_b64 = response_data["client_data"]["passport"]
@@ -85,3 +90,23 @@ if document_path in zip_file.namelist():
             print(full_text)
 else:
     print("Le fichier 'word/document.xml' est introuvable dans le profil.")
+
+
+# === Traitement du fichier account (PDF) avec PyMuPDF ===
+print("\n=== Texte extrait depuis le fichier ACCOUNT (via PyMuPDF) ===\n")
+import base64
+from pdf2image import convert_from_bytes
+import pytesseract
+
+# Décode ton PDF base64
+account_b64 = response_data["client_data"].get("account")
+pdf_bytes = base64.b64decode(account_b64)
+
+# Convertit chaque page en image
+images = convert_from_bytes(pdf_bytes)
+
+# Applique OCR avec pytesseract
+for i, image in enumerate(images):
+    text = pytesseract.image_to_string(image, lang="eng")
+    print(f"--- Page {i + 1} ---")
+    print(text)
