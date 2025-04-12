@@ -42,19 +42,22 @@ class Player:
         decision = self.make_decision(start_response.client_data)
 
         decision_counter = 0
+        client_id = start_response.client_id
 
         is_game_running = True
         while is_game_running:
             payload = GameDecisionRequestDTO(
                 decision=decision,
                 session_id=start_response.session_id,
-                client_id=start_response.client_id,
+                client_id=client_id,
             )
 
+            log.info('client id: %s', client_id)
             decision_response = self.client.send_decision(payload)
             log.info(f'decision: {decision}, response status: {decision_response.status}, score: {decision_response.score}')
 
             status = decision_response.status
+            client_id = decision_response.client_id
             is_game_running = status not in ['gameover', 'complete']
             client_hash = self.hash_obj(decision_response.client_data)
             if is_game_running:
@@ -71,7 +74,7 @@ class Player:
                 store_game_round_data(decision, decision_response, decision_counter, str(start_response.session_id), status)
 
             decision_counter += 1
-            time.sleep(1.5)
+            time.sleep(1)
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
         # Do your magic!
