@@ -1,7 +1,6 @@
 import requests
 import config
 import logging
-from typing import Dict, Any
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from dto.responses import GameStartResponseDTO, GameDecisionResponseDTO
 
@@ -51,7 +50,7 @@ class JuliusBaerApiClient:
         """
         Make a game decision (Accept or Reject).
         """
-        logging.info("[+] Making decision")
+        logging.info("[+] Sending decision")
         decision_uri = f"{self.api_uri}/game/decision"
 
         payload = game_decision_request.model_dump_json()
@@ -62,9 +61,9 @@ class JuliusBaerApiClient:
 
             response_json = response.json()
             validated_response = GameDecisionResponseDTO.model_validate(response_json)
-            logging.info("Game decision made successfully")
+            logging.info("[+] Decision sent successfully")
 
             return validated_response
         except Exception as e:
-            logging.error(f"[!] Failed to start game session: {e}")
+            logging.error(f"[!] Failed to send a decision: {e}")
             raise
