@@ -16,7 +16,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 log = logging.getLogger(__name__)
 
 
-class Player:
+class Advisor:
 
     def __init__(self):
         self.client = JuliusBaerApiClient()

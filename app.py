@@ -7,7 +7,7 @@ import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from dto.responses import GameStartResponseWithBotDecisionDTO, GameDecisionResponseWithBotDecisionDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
-from services.player import Player
+from services.advisor import Advisor
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
@@ -19,7 +19,7 @@ jb_client = JuliusBaerApiClient()
 def new_game():
     game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
     res = jb_client.start_game(game_start_request)
-    bot_decision = Player().make_decision(res.client_data)
+    bot_decision = Advisor().make_decision(res.client_data)
 
     res_with_bot_decision = GameStartResponseWithBotDecisionDTO(
         message=res.message,
@@ -29,7 +29,7 @@ def new_game():
         client_data=res.client_data,
         score=res.score,
         bot_decision=bot_decision,
-        bot_reason=""  # TODO
+        bot_reason=bot_decision,
     )
 
     return res_with_bot_decision.model_dump_json()
@@ -46,13 +46,14 @@ def next_client():
 
     make_decision_request = GameDecisionRequestDTO(decision=decision, client_id=client_id, session_id=session_id)
     res = jb_client.send_decision(make_decision_request)
+    bot_decision = Advisor().make_decision(res.client_data)
 
     res_with_bot_decision = GameDecisionResponseWithBotDecisionDTO(
         status=res.status,
         score=res.score,
         client_id=res.client_id,
         client_data=res.client_data,
-        bot_decision="Accept",  # TODO
+        bot_decision=bot_decision,
         bot_reason=""  # TODO
     )
 
