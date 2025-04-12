@@ -5,9 +5,7 @@ from typing import Literal, Dict, Any
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
-from utils.storage.game_files_manager import store_game_round_data
-import csv
-from pathlib import Path
+from utils.storage.game_files_manager import store_game_round_data, store_decision
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +15,6 @@ class Player:
     def __init__(self):
         self.client = JuliusBaerApiClient()
         self._thread = None
-        self.cvs_path = './resources/decision_log.csv'
 
     def start(self):
         self.play()
@@ -57,7 +54,7 @@ class Player:
             status = decision_response.status
             is_game_running = status not in ['gameover', 'complete']
             if is_game_running:
-                self.store_decision(str(client_id), decision)
+                store_decision(str(client_id), decision)
             client_id = decision_response.client_id
 
             decision = self.make_decision(decision_response.client_data)
@@ -77,17 +74,6 @@ class Player:
         # Do your magic!
 
         return 'Accept'  # Replace me!!
-
-    def store_decision(self, client_hash: str, decision: str):
-        path = Path(self.cvs_path)
-        path.parent.mkdir(parents=True, exist_ok=True)  # create dirs if needed
-
-        exists = path.exists()
-        with open(path, 'a', newline='') as f:
-            writer = csv.writer(f)
-            if not exists:
-                writer.writerow(['client_hash', 'decision'])  # header
-            writer.writerow([client_hash, decision])
 
 
 
