@@ -146,10 +146,11 @@
             <div class="sticky-top-column">
                  <div class="card shadow-sm mb-3">
                     <div class="card-header">
-                        <h5 class="mb-0">Dossier Information</h5> </div>
+                        <h5 class="mb-0">Game Information</h5> </div>
                     <div class="card-body">
                         <p class="mb-1"><strong>Client ID:</strong> <code x-text="gameData?.client_id || 'N/A'"></code></p>
                         <p class="mb-1"><strong>Session ID:</strong> <code x-text="gameData?.session_id || 'N/A'"></code></p>
+                        <p class="mb-1"><strong>Score:</strong> <code x-text="gameData?.score || '0'"></code></p>
                         <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info" x-text="gameData?.status || 'N/A'"></span></p>
                     </div>
                 </div>
