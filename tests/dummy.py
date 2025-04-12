@@ -1,4 +1,7 @@
 from datetime import date
+import json
+from typing import Any
+import config
 from validation.cross_validate import ExtractedData
 from validation.from_account import FromAccount
 from validation.from_description import FromDescription
@@ -107,3 +110,11 @@ def dummy_data() -> ExtractedData:
         passport=dummy_passport(),
         profile=dummy_profile(),
     )
+
+def dummy_client_data() -> dict[str, Any]:
+    # TODO make generic
+    resp_path = f"{config.GAME_FILES_DIR}/65e6ec83-88b1-4d1f-8560-a1418803348b/000000_decision_accept_active/000000_response.json"
+    out = {}
+    with open(resp_path, "r") as file:
+        out = json.loads(str(json.loads(file.read())))
+    return out
