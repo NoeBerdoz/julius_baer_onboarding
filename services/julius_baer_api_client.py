@@ -46,7 +46,7 @@ class JuliusBaerApiClient:
             logging.error(f"[!] Failed to start game session: {e}")
             raise
 
-    def make_decision(self, game_decision_request: GameDecisionRequestDTO) -> GameDecisionResponseDTO:
+    def send_decision(self, game_decision_request: GameDecisionRequestDTO) -> GameDecisionResponseDTO:
         """
         Make a game decision (Accept or Reject).
         """

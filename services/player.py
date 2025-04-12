@@ -28,7 +28,7 @@ class Player:
                 client_id=start_response.client_id,
             )
 
-            decision_response = self.client.make_decision(payload)
+            decision_response = self.client.send_decision(payload)
             logging.info(decision_response)
             status = decision_response.status
             decision = self.make_decision(decision_response.client_data)
