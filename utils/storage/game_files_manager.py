@@ -62,8 +62,7 @@ def store_decoded_files(response: Dict[str, Any] | None, directory: str):
 
     logging.info(f"[+] Storing failed game round data with decoded files in: {directory}")
 
-    json_response = json.loads(response)
-    client_data = json_response["client_data"]
+    client_data = response["client_data"]
 
     for key, extension in file_map.items():
         if key in client_data:
@@ -112,7 +111,6 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
                 previous_folder_path_instance.rename(new_gameover_path)
                 logging.info(f"[+] Renamed gameover folder: {new_gameover_path}")
         else:
-
             padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
             round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status}"
 
@@ -123,10 +121,10 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
             json_file_path = os.path.join(round_dir, f"{padded_round}_response.json")
 
             with open(json_file_path, "w") as json_file:
-                json.dump(response.model_dump_json(), json_file)
-            logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
+                json_file.write(response.model_dump_json())
 
-            store_decoded_files(response.model_dump_json(), round_dir)
+            logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
+            store_decoded_files(response.model_dump(mode="json"), round_dir)
 
 
     except Exception as e:
