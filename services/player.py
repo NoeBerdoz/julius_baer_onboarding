@@ -37,8 +37,10 @@ class Player:
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
         # Do your magic!
 
-        import random
-        return random.choice(["Accept", "Reject"])
+        return 'Accept'
+
+        # import random
+        # return random.choice(["Accept", "Reject"])
 
 
 if __name__ == '__main__':
