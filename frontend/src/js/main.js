@@ -7,6 +7,64 @@ import Alpine from 'alpinejs'
 
 window.Alpine = Alpine
 
+// Define an Alpine component to manage the game state
+Alpine.data('gameManager', () => ({
+    // --- Component State ---
+    isLoading: false,
+    error: null,
+    gameData: null,
+
+    init() {
+        console.log('Game manager initializing...');
+        this.startNewGame();
+    },
+
+    startNewGame() {
+        this.isLoading = true;
+        this.error = null;
+        this.gameData = null;
+
+        // Use the browser's fetch API
+        fetch('http://127.0.0.1:5000/new-game', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            // Check if the request was successful (status code 2xx)
+            if (!response.ok) {
+                // If not okay, throw an error to be caught by .catch()
+                // Try to get error details from response body if possible
+                return response.json().then(errData => {
+                   throw new Error(errData.detail || `HTTP error! status: ${response.status}`);
+                }).catch(() => {
+                   // Fallback if response is not JSON or other error
+                   throw new Error(`HTTP error! status: ${response.status}`);
+                });
+            }
+            // If okay, parse the JSON response body
+            return response.json();
+        })
+        .then(data => {
+            // Success! Store the received game data
+            console.log('New game data received:', data);
+            this.gameData = data; // e.g., { message, session_id, client_id, ... }
+        })
+        .catch(error => {
+            // Handle any errors during fetch or processing
+            console.error('Error starting new game:', error);
+            this.error = error.message || 'Failed to start game. Check console/backend.';
+        })
+        .finally(() => {
+            // This runs regardless of success or failure
+            this.isLoading = false; // Turn off loading indicator
+        });
+    }
+
+    // submitDecision(decision) { ... }
+}));
+
 Alpine.data('pdfViewer', () => ({
     pdfUrl: null,
 

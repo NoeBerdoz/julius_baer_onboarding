@@ -1,9 +1,10 @@
 import logging
 
-from flask import Flask
+from flask import Flask, request
+from flask_cors import cross_origin
 
 import config
-from dto.requests import GameStartRequestDTO
+from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 
 app = Flask(__name__)
@@ -12,12 +13,26 @@ jb_client = JuliusBaerApiClient()
 
 
 @app.route('/new-game', methods=['POST'])
+@cross_origin() # allow all origins all methods
 def new_game():
     game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
     res = jb_client.start_game(game_start_request)
 
     return res.model_dump_json()
 
+
+@app.route('/next', methods=['POST'])
+def next_client():
+    body = request.get_json()
+
+    decision = body.get("decision")
+    client_id = body.get("client_id")
+    session_id = body.get("session_id")
+
+    make_decision_request = GameDecisionRequestDTO(decision=decision, client_id=client_id, session_id=session_id)
+    res = jb_client.send_decision(make_decision_request)
+
+    return res.model_dump_json()
 
 if __name__ == '__main__':
     app.run()

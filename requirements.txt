@@ -41,3 +41,5 @@ annotated-types==0.7.0
 blinker==1.9.0
 langchain-google-genai==2.1.2
 numpy==2.2.4
+pymupdf == 1.25.5
+flask-cors==5.0.1

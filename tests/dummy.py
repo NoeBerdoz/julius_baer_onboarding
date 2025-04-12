@@ -113,8 +113,8 @@ def dummy_data() -> ExtractedData:
 
 def dummy_client_data() -> dict[str, Any]:
     # TODO make generic
-    resp_path = f"{config.GAME_FILES_DIR}/65e6ec83-88b1-4d1f-8560-a1418803348b/000000_decision_accept_active/000000_response.json"
+    resp_path = f"{config.GAME_FILES_DIR}/fc3b1f5a-296d-4cd0-a560-cfa5a6f8d302/000000_decision_accept_active/000000_response.json"
     out = {}
     with open(resp_path, "r") as file:
-        out = json.loads(str(json.loads(file.read())))
+        out = json.loads(file.read())["client_data"]
     return out
