@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from enum import StrEnum
 from typing import Any, Callable, Optional
 from pydantic import BaseModel
@@ -59,11 +60,26 @@ def xval_passport_no_account_passport(data: ExtractedData) -> Optional[XValFailu
             doc2_val=f"{data.passport.passport_number=}"
         )
 
+def birth_date_to_age(birth_date: date) -> int:
+    today = date.today()
+    return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+def xval_age_description_passport(data: ExtractedData) -> Optional[XValFailure]:
+    age_from_birth_date = birth_date_to_age(data.passport.birth_date)
+    if data.description.age != age_from_birth_date:
+        return XValFailure(
+            doc1_type=DocType.description,
+            doc1_val=f"{data.description.age=}",
+            doc2_type=DocType.passport,
+            doc2_val=f"{data.passport.birth_date=}"
+        )
+
 def xval_all(data: ExtractedData) -> list[XValFailure]:
     xref_validators: list[Callable[[ExtractedData], Optional[XValFailure]]] = [
         xval_name_account_description,
         xval_email_account_profile,
-        xval_passport_no_account_passport
+        xval_passport_no_account_passport,
+        xval_age_description_passport
     ]
 
     validation_failures = []

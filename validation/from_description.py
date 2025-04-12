@@ -1,5 +1,5 @@
-from typing import Literal, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FromDescription(BaseModel):
