@@ -87,5 +87,5 @@ def store_decision(client_hash: str, decision: str):
     with open(path, 'a', newline='') as f:
         writer = csv.writer(f)
         if not exists:
-            writer.writerow(['client_hash', 'decision'])  # header
+            writer.writerow(['client_id', 'decision'])  # header
         writer.writerow([client_hash, decision])
