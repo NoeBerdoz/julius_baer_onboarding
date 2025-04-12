@@ -112,6 +112,7 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
                 previous_folder_path_instance.rename(new_gameover_path)
                 logging.info(f"[+] Renamed gameover folder: {new_gameover_path}")
         else:
+
             padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
             round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status}"
 
@@ -123,8 +124,11 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
 
             with open(json_file_path, "w") as json_file:
                 json.dump(response.model_dump_json(), json_file)
+            logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
 
-        logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
+            store_decoded_files(response.model_dump_json(), round_dir)
+
+
     except Exception as e:
         logging.error(f"[!] Failed to save API response JSON: {e}")
 
