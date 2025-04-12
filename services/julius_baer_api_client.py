@@ -1,27 +1,22 @@
-import requests
-import uuid
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
+import requests
+
+import config
 from dto.requests import GameStartRequest, GameDecisionRequest
 
 
-class GameApiClient:
+class JuliusBaerApiClient:
     """
-    Client for interacting with the Game API service.
+    Client for interacting with the Julius Baer API service.
 
     Provides methods to start a game and make game decisions.
     """
 
     def __init__(self):
-        """
-        Initialize the Game API client.
-
-        Args:
-            base_url: Base URL for the API service. Defaults to "http://localhost:5000".
-        """
-        # TODO: import base_url from config self.base_url = base_url.rstrip('/')
-        self.session_id = None
-        self.client_id = None
+        self.api_uri = config.API_URI
+        self.api_key = config.API_KEY
+        self.api_team = config.API_TEAM
 
     def start_game(self, game_start_request: GameStartRequest) -> Dict[str, Any]:
         """
@@ -33,10 +28,15 @@ class GameApiClient:
         Returns:
             Dict containing the game start response with session_id, player_id, etc.
         """
-        url = f"{self.base_url}/game/start"
+        url = f"{self.api_uri}/game/start"
         payload = {"player_name": game_start_request.player_name}
 
-        response = requests.post(url, json=payload)
+        headers = {
+            "x-api-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Raise exception for HTTP errors
 
         data = response.json()
@@ -71,7 +71,8 @@ class GameApiClient:
         client_id = game_decision_request.client_id or self.client_id
 
         if not session_id or not client_id:
-            raise ValueError("Session ID and Client ID are required. Either provide them explicitly or call start_game first.")
+            raise ValueError(
+                "Session ID and Client ID are required. Either provide them explicitly or call start_game first.")
 
         url = f"{self.base_url}/game/decision"
         payload = {
