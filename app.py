@@ -16,8 +16,10 @@ jb_client = JuliusBaerApiClient()
 @app.route('/new-game', methods=['POST'])
 @cross_origin() # allow all origins all methods
 def new_game():
-    game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
-    res = jb_client.start_game(game_start_request)
+    # game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
+    # res = jb_client.start_game(game_start_request)
+    player = Player()
+    player.play_on_separate_thread()
 
     res_with_bot_decision = GameStartResponseWithBotDecisionDTO(
         message=res.message,
