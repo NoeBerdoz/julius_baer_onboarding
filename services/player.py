@@ -4,11 +4,9 @@ import time
 from typing import Literal, Dict, Any
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
-from services.extractor import extract_profile, extract_passport
+from services.extractor import extract_profile, extract_passport, extract_description
 from services.julius_baer_api_client import JuliusBaerApiClient
-from utils.storage.game_files_manager import store_game_round_data, store_decision, load_decisions
-import json
-import hashlib
+from utils.storage.game_files_manager import store_game_round_data
 
 
 log = logging.getLogger(__name__)
@@ -16,13 +14,9 @@ log = logging.getLogger(__name__)
 
 class Player:
 
-    def __init__(self, use_cache = True):
+    def __init__(self):
         self.client = JuliusBaerApiClient()
         self._thread = None
-        self.cached_decisions = None
-        if use_cache:
-            self.cached_decisions = self.load_cached_decisions()
-            print(self.cached_decisions)
 
     def start(self):
         self.play()
@@ -43,7 +37,6 @@ class Player:
         log.info('game started, session id: %s', start_response.session_id)
 
         client_id = start_response.client_id
-        client_hash = self.hash_obj(start_response.client_data)
         decision = self.make_decision(start_response.client_data)
 
         decision_counter = 0
@@ -62,11 +55,8 @@ class Player:
 
             status = decision_response.status
             is_game_running = status not in ['gameover', 'complete']
-            if is_game_running:
-                store_decision(client_hash, decision)
             client_id = decision_response.client_id
 
-            client_hash = self.hash_obj(decision_response.client_data)
             decision = self.make_decision(decision_response.client_data)
 
             # Handle first response from game initialization logic
@@ -81,32 +71,9 @@ class Player:
             time.sleep(1)
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
-        # Verify cached data (avoid duplicated call to the LLM)
-        client_hash = self.hash_obj(client_data)
-        if self.cached_decisions is not None and client_hash in self.cached_decisions.keys():
-            print('DECISION TAKE FROM CACHE --------------------------- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-            return self.cached_decisions[client_hash]
-
         # Data extraction
-
-        # profile = extract_profile(client_data)
-        # passport = extract_passport(client_data)
-
-        # Do your magic!
+        profile = extract_profile(client_data)
+        passport = extract_passport(client_data)
+        description = extract_description(client_data)
 
         return 'Accept'  # Replace me!!
-
-    def load_cached_decisions(self) -> Dict[str, Literal["Accept", "Reject"]]:
-        decisions = load_decisions()
-        mapping = {}
-        for item in decisions:
-            mapping[item['client_hash']] = item['decision']
-
-        return mapping
-
-    @staticmethod
-    def hash_obj(obj) -> str:
-        obj_str = json.dumps(obj, sort_keys=True)  # make dict order consistent
-        return hashlib.sha256(obj_str.encode()).hexdigest()
-
-
