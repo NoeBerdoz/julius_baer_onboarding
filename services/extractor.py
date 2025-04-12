@@ -7,11 +7,32 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
 
-from utils.parsers import process_profile
+from utils.parsers import process_profile, process_passport
+from validation.from_passport import FromPassport
 from validation.from_profile import FromProfile
 
 
-def extract_profile(client_data: dict[str, Any]) -> FromProfile:
+def extract_passport(client_data: dict[str, Any]):
+    passport_data = client_data.get("passport")
+
+    prompt_template = (
+        "Extract the following information from the provided passport text.\n"
+        "Return only JSON matching this format:\n{format_instructions}\n\n"
+        "Pay special attention to the passport number\n"
+        "Passport text:\n{processed_text}"
+    )
+
+    result = __run_extraction_chain(
+        raw_file_data=passport_data,
+        file_processor=process_passport,
+        pydantic_model=FromPassport,
+        prompt_template=prompt_template,
+    )
+
+    return result
+
+
+def extract_profile(client_data: dict[str, Any]):
     passport_data = client_data.get("profile")
 
     prompt_template = (
