@@ -78,8 +78,8 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
         logging.error(f"[!] Failed to save API response JSON: {e}")
 
 
-def store_decision(client_hash: str, decision: str):
-    path = Path('../../resources/decision_log.csv')  # TODO clean me!!
+def store_decision(client_id: str, decision: str):
+    path = Path('./resources/decision_log2.csv')  # TODO clean me!!
 
     path.parent.mkdir(parents=True, exist_ok=True)  # create dirs if needed
 
@@ -88,4 +88,4 @@ def store_decision(client_hash: str, decision: str):
         writer = csv.writer(f)
         if not exists:
             writer.writerow(['client_id', 'decision'])  # header
-        writer.writerow([client_hash, decision])
+        writer.writerow([client_id, decision])
