@@ -16,12 +16,20 @@ def process_passport(passport_b64: str) -> str:
     :return: Texte extrait de l'image.
     """
     image_bytes = base64.b64decode(passport_b64)
-    # image = Image.open(io.BytesIO(image_bytes))
-    # text = pytesseract.image_to_string(image, lang='eng')
     with NamedTemporaryFile(mode="wb") as tmp_img:
         tmp_img.write(image_bytes)
         with open(tmp_img.name, "rb") as read_img:
-            text = read_mrz(read_img)
-    # text = json.dumps(text)
-    # TODO CONTINUE
-    return text
+            mrz_obj = read_mrz(read_img)
+
+    image = Image.open(io.BytesIO(image_bytes))
+    tesseract_text = pytesseract.image_to_string(image, lang='eng')
+    out_dict = {
+        "country": mrz_obj.country,
+        "names": mrz_obj.names,
+        "number": mrz_obj.number,
+        "surname": mrz_obj.surname,
+        "mrz": mrz_obj.aux["text"],
+        "raw": tesseract_text
+    }
+    out = json.dumps(out_dict)
+    return out
