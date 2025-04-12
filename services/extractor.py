@@ -11,7 +11,7 @@ from utils.parsers import process_profile
 from validation.from_profile import FromProfile
 
 
-def extract_profile(client_data: dict[str, Any]):
+def extract_profile(client_data: dict[str, Any]) -> FromProfile:
     passport_data = client_data.get("profile")
 
     prompt_template = (
