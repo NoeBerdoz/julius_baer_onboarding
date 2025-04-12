@@ -99,7 +99,8 @@ class Advisor:
     - Implausible or suspicious details
 
     Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
-
+    Take into consideration that occupation history might be in the past and the might not match the actual situation.
+    Pay attention to the currency when dealing with ammounts.
     Be highly critical. Reject if there's any doubt or if anything feels wrong.
 
     Return only JSON matching this format:
