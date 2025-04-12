@@ -50,10 +50,20 @@ def xval_email_account_profile(data: ExtractedData) -> Optional[XValFailure]:
             doc2_val=f"{data.profile.email=}"
         )
 
+def xval_passport_no_account_passport(data: ExtractedData) -> Optional[XValFailure]:
+    if data.account.passport_number != data.passport.passport_number:
+        return XValFailure(
+            doc1_type=DocType.account,
+            doc1_val=f"{data.account.passport_number=}",
+            doc2_type=DocType.passport,
+            doc2_val=f"{data.passport.passport_number=}"
+        )
 
-def xref_all(data: ExtractedData) -> list[XValFailure]:
+def xval_all(data: ExtractedData) -> list[XValFailure]:
     xref_validators: list[Callable[[ExtractedData], Optional[XValFailure]]] = [
-        xval_name_account_description
+        xval_name_account_description,
+        xval_email_account_profile,
+        xval_passport_no_account_passport
     ]
 
     validation_failures = []

@@ -1,6 +1,6 @@
 from datetime import date
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Literal, Self
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class FromPassport(BaseModel):
@@ -21,6 +21,12 @@ class FromPassport(BaseModel):
 
     issue_date: date
     expiry_date: date
+
+    @model_validator(mode='after')
+    def check_expiry_date_after_issue_date(self) -> Self:
+        if self.issue_date >= self.expiry_date:
+            raise ValueError(f'Expiry date is not after issue date')
+        return self
 
     signature_present: bool
 
