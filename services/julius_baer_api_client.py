@@ -3,7 +3,7 @@ import config
 import logging
 from typing import Dict, Any
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
-from dto.responses import GameStartResponseDTO
+from dto.responses import GameStartResponseDTO, GameDecisionResponseDTO
 
 
 class JuliusBaerApiClient:
@@ -55,7 +55,7 @@ class JuliusBaerApiClient:
             logging.error(f"[!] Failed to start game session: {e}")
             raise
 
-    def make_decision(self, game_decision_request: GameDecisionRequestDTO) -> Dict[str, Any]:
+    def make_decision(self, game_decision_request: GameDecisionRequestDTO) -> GameDecisionResponseDTO:
         """
         Make a game decision (Accept or Reject).
 
