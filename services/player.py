@@ -78,13 +78,24 @@ class Player:
         account = extract_account(client_data)
 
         prompt_template = (
-            "You are a helpful assistant!\n"
-            ""
-            
-            "Extract the following information from the provided passport text.\n"
-            "Return only JSON matching this format:\n{format_instructions}\n\n"
-            "Pay special attention to the passport number\n"
-            "Passport text:\n{processed_text}"
+            "You are a helpful assistant at a private bank.\n"
+            "Your task is to accept or reject a new client's application for private banking.\n\n"
+            "Only reject the application if there is an inconsistency in the data provided.\n"
+            "Inconsistencies include:\n"
+            "- Incorrect data (e.g., mismatched or invalid information)\n"
+            "- Incomplete data (e.g., missing required fields)\n\n"
+            "Return only JSON matching this format:\n"
+            "{format_instructions}\n\n"
+            "Here is the extracted passport text:\n"
+            "{processed_text}\n\n"
+            "Use the extracted profile, description, and account details to check consistency."
         )
+
+        # You'd insert the format instructions and passport text here before calling the LLM
+        # For example:
+        # final_prompt = prompt_template.format(
+        #     format_instructions=your_format_instructions,
+        #     processed_text=passport['text']
+        # )
 
         return 'Accept'  # Replace me!!
