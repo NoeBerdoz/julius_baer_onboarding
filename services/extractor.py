@@ -1,20 +1,65 @@
 import base64
 import binascii
-from typing import Callable, Type
+from typing import Callable, Type, Any, TypeVar
 from langchain_core.runnables import Runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel
+
+from utils.parsers import process_profile, process_passport
+from validation.from_passport import FromPassport
+from validation.from_profile import FromProfile
 
 
-def run_extraction_chain(
+def extract_passport(client_data: dict[str, Any]):
+    passport_data = client_data.get("passport")
+
+    prompt_template = (
+        "Extract the following information from the provided passport text.\n"
+        "Return only JSON matching this format:\n{format_instructions}\n\n"
+        "Pay special attention to the passport number\n"
+        "Passport text:\n{processed_text}"
+    )
+
+    result = __run_extraction_chain(
+        raw_file_data=passport_data,
+        file_processor=process_passport,
+        pydantic_model=FromPassport,
+        prompt_template=prompt_template,
+    )
+
+    return result
+
+
+def extract_profile(client_data: dict[str, Any]):
+    passport_data = client_data.get("profile")
+
+    prompt_template = (
+        "Extract the following information from the provided text.\n"
+        "Return only JSON matching this format:\n{format_instructions}\n\n"
+        "Pay special attention to the passport number and signature.\n"
+        "Passport text:\n{processed_text}"
+    )
+
+    result = __run_extraction_chain(
+        raw_file_data=passport_data,
+        file_processor=process_profile,
+        pydantic_model=FromProfile,
+        prompt_template=prompt_template,
+    )
+
+    return result
+
+ModelType = TypeVar("ModelType", bound=BaseModel)
+def __run_extraction_chain(
     *,
     raw_file_data: str,
     file_processor: Callable[[str], str],
-    pydantic_model: Type,
+    pydantic_model: type[ModelType],
     prompt_template: str,
     model_name: str = "gemini-2.0-flash"
-):
+) -> ModelType:
     """
     Traite un fichier encodé en base64, applique un parser OCR, génère un prompt, envoie à un modèle LLM, et retourne le résultat parsé.
 
