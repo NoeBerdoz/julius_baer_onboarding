@@ -277,3 +277,4 @@ devenv.lock
 game_files
 
 .vscode
+node_modules

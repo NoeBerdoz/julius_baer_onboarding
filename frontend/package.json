@@ -1,0 +1,17 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "alpinejs": "^3.14.9"
+  },
+  "devDependencies": {
+    "vite": "^6.2.6"
+  }
+}
