@@ -15,9 +15,43 @@ GAME_FILES_DIR = config.GAME_FILES_DIR
 FOLDER_ROUND_PADDING = 6
 
 
-def store_decoded_files(client_data: Dict[str, Any] | None, directory: str):
+def _get_previous_round_folder(current_round: int, session_id: str) -> str | None:
     """
-        Decodes and saves base64 encoded files from client_data into the specified round directory.
+    Finds the directory path for the previous round by searching within the session directory
+    for a folder starting with the previous round's padded number.
+    """
+    # TODO fix this technical debt, I'm so sorry for this, just rushing
+
+    previous_round_num = current_round - 1
+    if previous_round_num < 0:
+        logging.warning(f"[+] Cannot get previous folder for round 0 (current_round was {current_round}).")
+        return None
+
+    session_dir = os.path.join(GAME_FILES_DIR, str(session_id))
+
+    # Calculate the prefix to search for (e.g., "000008_decision_")
+    prev_padded = str(previous_round_num).zfill(FOLDER_ROUND_PADDING)
+    # Match the start of the folder name format we established
+    prefix_to_find = f"{prev_padded}_decision_"
+
+    found_folder = None
+
+    # List contents of the session directory
+    for item_name in os.listdir(session_dir):
+        item_path = os.path.join(session_dir, item_name)
+        # Check if it's a directory and starts with the correct prefix
+        if os.path.isdir(item_path) and item_name.startswith(prefix_to_find):
+            found_folder = item_path
+            # We assume only one match is possible, we can break here
+            logging.info(f"Found previous round folder: {found_folder}")
+            break
+
+    return found_folder
+
+
+def store_decoded_files(response: Dict[str, Any] | None, directory: str):
+    """
+        Decodes and saves base64 encoded files from response into the specified round directory.
     """
     file_map = {
         "passport": ".png",
@@ -27,6 +61,9 @@ def store_decoded_files(client_data: Dict[str, Any] | None, directory: str):
     }
 
     logging.info(f"[+] Storing failed game round data with decoded files in: {directory}")
+
+    json_response = json.loads(response)
+    client_data = json_response["client_data"]
 
     for key, extension in file_map.items():
         if key in client_data:
@@ -56,22 +93,30 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
     logging.info(f"[+] Storing game round data in {GAME_FILES_DIR}")
 
     try:
-        padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
-        round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status}"
-
-        # Construct the directory path: base_dir / session_id / decision_XXXXXX
-        round_dir = os.path.join(GAME_FILES_DIR, str(session_id), round_folder_name)
-        os.makedirs(round_dir, exist_ok=True)  # Create the directory structure if it doesn't exist
-
-        json_file_path = os.path.join(round_dir, f"{padded_round}_response.json")
-
-        with open(json_file_path, "w") as json_file:
-            json.dump(response.model_dump_json(), json_file)
-
+        # The response client_data is not present on gameover, in this case we decode the files for further investigation
         if status in ["gameover", "complete"]:
             logging.info(f"[+] Game status is '{status}'. Attempting to save decoded files.")
-            store_decoded_files(response.client_data, round_dir)
+            previous_round_folder = _get_previous_round_folder(round_number, session_id)
+            if previous_round_folder:
+                previous_round_num = round_number - 1
+                prev_padded = str(previous_round_num).zfill(FOLDER_ROUND_PADDING)
+                previous_json_filename = f"{prev_padded}_response.json"  # Use previous round number in filename
+                previous_json_path = os.path.join(previous_round_folder, previous_json_filename)
+                with open(previous_json_path, 'r') as f:
+                    prev_response_data = json.load(f)
+                store_decoded_files(prev_response_data, previous_round_folder)
+        else:
+            padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
+            round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status}"
 
+            # Construct the directory path: base_dir / session_id / decision_XXXXXX
+            round_dir = os.path.join(GAME_FILES_DIR, str(session_id), round_folder_name)
+            os.makedirs(round_dir, exist_ok=True)  # Create the directory structure if it doesn't exist
+
+            json_file_path = os.path.join(round_dir, f"{padded_round}_response.json")
+
+            with open(json_file_path, "w") as json_file:
+                json.dump(response.model_dump_json(), json_file)
 
         logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
     except Exception as e:
