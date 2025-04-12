@@ -159,18 +159,18 @@
                         <h5 class="mb-0">AI Recommendation</h5>
                     </div>
                     <div class="card-body">
-                        <template x-if="gameData?.client_data?.ai_recommendation === 'Accept'">
+                        <template x-if="gameData?.bot_decision === 'Accept'">
                             <div class="alert alert-success p-2 mb-0"
-                                 x-text="gameData.client_data.ai_recommendation"></div>
+                                 x-text="gameData.bot_reason"></div>
                         </template>
-                        <template x-if="gameData?.client_data?.ai_recommendation === 'Reject'">
+                        <template x-if="gameData?.bot_decision === 'Reject'">
                             <div class="alert alert-danger p-2 mb-0"
-                                 x-text="gameData.client_data.ai_recommendation"></div>
+                                 x-text="gameData.bot_reason"></div>
                         </template>
-                        <template x-if="!gameData?.client_data?.ai_recommendation">
+                        <template x-if="!gameData?.bot_decision">
                             <div class="alert alert-warning p-2 mb-0">Processing...</div>
                         </template>
-                        <p class="small mt-2 mb-0" x-text="gameData?.client_data?.ai_explanation || ''"></p>
+                        <p class="small mt-2 mb-0" x-text="gameData?.client_data?.bot_reason || ''"></p>
                     </div>
                 </div>
                  <div class="card shadow-sm mb-3">
