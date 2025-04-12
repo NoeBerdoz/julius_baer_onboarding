@@ -4,6 +4,7 @@ import '../scss/styles.scss'
 import * as bootstrap from 'bootstrap'
 
 import Alpine from 'alpinejs'
+import mammoth from "mammoth";
 
 window.Alpine = Alpine
 
@@ -16,7 +17,7 @@ Alpine.data('gameManager', () => ({
     // --- Document State (add properties for each document type) ---
     passportSrc: null,      // For PNG data URL
     accountSrc: null,       // For PDF data URL
-    profileSrc: null,       // For DOCX data URL (download link)
+    profileHtml: null,       // For DOCX data URL
     descriptionText: null,  // For decoded TXT content
 
     init() {
@@ -24,13 +25,29 @@ Alpine.data('gameManager', () => ({
         this.startNewGame();
     },
 
+    // Helper to convert Base64 to ArrayBuffer (needed for Mammoth)
+    base64ToArrayBuffer(base64) {
+        try {
+            const binary_string = atob(base64);
+            const len = binary_string.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        } catch (e) {
+            console.error("Error decoding base64 string:", e);
+            return null;
+        }
+    },
+
     // --- Helper Function to Process Document Data ---
-    processClientData(clientData) {
+    async processClientData(clientData) {
         if (!clientData) {
             console.log('No client data to process.');
             this.passportSrc = null;
             this.accountSrc = null;
-            this.profileSrc = null;
+            this.profileHtml = null;
             this.descriptionText = null;
             return;
         }
@@ -55,9 +72,11 @@ Alpine.data('gameManager', () => ({
 
         // --- Profile (DOCX) - Create download link ---
         if (clientData.profile) {
-            this.profileSrc = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${clientData.profile}`;
+            const arrayBuffer = this.base64ToArrayBuffer(clientData.profile);
+            const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+            this.profileHtml = result.value;
         } else {
-            this.profileSrc = null; // Reset if not provided
+            this.profileHtml = null; // Reset if not provided
             console.log('Profile base64 data not found.');
         }
 

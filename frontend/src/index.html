@@ -13,6 +13,7 @@
             border: 1px solid #dee2e6; /* Bootstrap border color */
             border-radius: 0.375rem; /* Bootstrap border radius */
         }
+
         .document-viewer pre {
             min-height: 600px;
             max-height: 70vh; /* Limit height for long text */
@@ -67,74 +68,98 @@
                     <ul class="nav nav-tabs" id="docTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="passport-tab" data-bs-toggle="tab"
-                                    data-bs-target="#passport-pane" type="button" role="tab" aria-controls="passport-pane"
-                                    aria-selected="true">Passport (PNG)</button>
+                                    data-bs-target="#passport-pane" type="button" role="tab"
+                                    aria-controls="passport-pane"
+                                    aria-selected="true">Passport (PNG)
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="account-pdf-tab" data-bs-toggle="tab" data-bs-target="#account-pdf-pane"
-                                    type="button" role="tab" aria-controls="account-pdf-pane" aria-selected="false">Account (PDF)</button>
+                            <button class="nav-link" id="account-pdf-tab" data-bs-toggle="tab"
+                                    data-bs-target="#account-pdf-pane"
+                                    type="button" role="tab" aria-controls="account-pdf-pane" aria-selected="false">
+                                Account (PDF)
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-docx-tab" data-bs-toggle="tab" data-bs-target="#profile-docx-pane"
-                                    type="button" role="tab" aria-controls="profile-docx-pane" aria-selected="false">Profile (DOCX)</button>
+                            <button class="nav-link" id="profile-docx-tab" data-bs-toggle="tab"
+                                    data-bs-target="#profile-docx-pane"
+                                    type="button" role="tab" aria-controls="profile-docx-pane" aria-selected="false">
+                                Profile (DOCX)
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="description-txt-tab" data-bs-toggle="tab" data-bs-target="#description-txt-pane"
-                                    type="button" role="tab" aria-controls="description-txt-pane" aria-selected="false">Description (TXT)</button>
+                            <button class="nav-link" id="description-txt-tab" data-bs-toggle="tab"
+                                    data-bs-target="#description-txt-pane"
+                                    type="button" role="tab" aria-controls="description-txt-pane" aria-selected="false">
+                                Description (TXT)
+                            </button>
                         </li>
                     </ul>
-                     <div class="tab-content pt-3 document-viewer" id="docTabContent">
-                        <div class="tab-pane fade show active" id="passport-pane" role="tabpanel" aria-labelledby="passport-tab" tabindex="0">
+                    <div class="tab-content pt-3 document-viewer" id="docTabContent">
+                        <div class="tab-pane fade show active" id="passport-pane" role="tabpanel"
+                             aria-labelledby="passport-tab" tabindex="0">
                             <template x-if="passportSrc">
                                 <img :src="passportSrc" class="img-fluid border rounded" alt="Passport Document">
                             </template>
                             <template x-if="!passportSrc && gameData?.client_data">
                                 <div class="alert alert-secondary">Passport document not available.</div>
                             </template>
-                            <template x-if="!gameData?.client_data && !isLoading"> <div class="alert alert-secondary">Loading document...</div>
-                           </template>
+                            <template x-if="!gameData?.client_data && !isLoading">
+                                <div class="alert alert-secondary">Loading document...</div>
+                            </template>
                         </div>
-                        <div class="tab-pane fade" id="account-pdf-pane" role="tabpanel" aria-labelledby="account-pdf-tab" tabindex="0">
+                        <div class="tab-pane fade" id="account-pdf-pane" role="tabpanel"
+                             aria-labelledby="account-pdf-tab" tabindex="0">
                             <template x-if="accountSrc">
                                 <iframe :src="accountSrc" type="application/pdf"></iframe>
                             </template>
                             <template x-if="!accountSrc && gameData?.client_data">
                                 <div class="alert alert-secondary">Account PDF document not available.</div>
                             </template>
-                             <template x-if="!gameData?.client_data && !isLoading">
-                                 <div class="alert alert-secondary">Loading document...</div>
+                            <template x-if="!gameData?.client_data && !isLoading">
+                                <div class="alert alert-secondary">Loading document...</div>
                             </template>
                         </div>
-                        <div class="tab-pane fade" id="profile-docx-pane" role="tabpanel" aria-labelledby="profile-docx-tab" tabindex="0">
-                            <template x-if="profileSrc">
-                                <div class="alert alert-info d-flex align-items-center" role="alert">
-                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-circle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Info:">
-                                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                                     </svg>
-                                     <div>
-                                        DOCX files cannot be previewed directly. Please download the file.
-                                     </div>
-                                 </div>
-                                <a :href="profileSrc" :download="(gameData?.client_id || 'client') + '_profile.docx'" class="btn btn-primary mt-2">
-                                    Download Profile Document (.docx)
+                        <div class="tab-pane fade" id="profile-docx-pane" role="tabpanel"
+                             aria-labelledby="profile-docx-tab" tabindex="0">
+                            <template x-if="profileHtml">
+                                <div x-html="profileHtml" class="docx-preview border rounded p-3 bg-white"></div>
+                            </template>
+                            <template x-if="!profileHtml && gameData?.client_data && typeof mammoth !== 'undefined'">
+                                <div class="alert alert-secondary">Profile document preview not available or empty.
+                                </div>
+                                <a x-show="gameData?.client_data?.profile_b64"
+                                   :href="'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,'+gameData.client_data.profile_b64"
+                                   :download="(gameData?.client_id || 'client') + '_profile.docx'"
+                                   class="btn btn-secondary mt-2">
+                                    Download Original (.docx)
                                 </a>
                             </template>
-                            <template x-if="!profileSrc && gameData?.client_data">
-                                 <div class="alert alert-secondary">Profile document not available.</div>
+                            <template x-if="!gameData?.client_data && !isLoading">
+                                <div class="alert alert-secondary">Loading document...</div>
                             </template>
-                             <template x-if="!gameData?.client_data && !isLoading">
-                                 <div class="alert alert-secondary">Loading document...</div>
+                            <template x-if="typeof mammoth === 'undefined'">
+                                <div class="alert alert-warning">Cannot preview DOCX. Required library (Mammoth.js) is
+                                    missing.
+                                </div>
+                                <a x-show="gameData?.client_data?.profile_b64"
+                                   :href="'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,'+gameData.client_data.profile_b64"
+                                   :download="(gameData?.client_id || 'client') + '_profile.docx'"
+                                   class="btn btn-secondary mt-2">
+                                    Download Original (.docx)
+                                </a>
                             </template>
                         </div>
-                         <div class="tab-pane fade" id="description-txt-pane" role="tabpanel" aria-labelledby="description-txt-tab" tabindex="0">
-                             <template x-if="descriptionText !== null">
+                        <div class="tab-pane fade" id="description-txt-pane" role="tabpanel"
+                             aria-labelledby="description-txt-tab" tabindex="0">
+                            <template x-if="descriptionText !== null">
                                 <pre x-text="descriptionText"></pre>
                             </template>
                             <template x-if="descriptionText === null && gameData?.client_data">
-                                 <div class="alert alert-secondary">Description document not available.</div>
+                                <div class="alert alert-secondary">Description document not available.</div>
                             </template>
-                             <template x-if="!gameData?.client_data && !isLoading">
-                                 <div class="alert alert-secondary">Loading document...</div>
+                            <template x-if="!gameData?.client_data && !isLoading">
+                                <div class="alert alert-secondary">Loading document...</div>
                             </template>
                         </div>
                     </div>
@@ -144,17 +169,20 @@
 
         <div class="col-lg-4">
             <div class="sticky-top-column">
-                 <div class="card shadow-sm mb-3">
+                <div class="card shadow-sm mb-3">
                     <div class="card-header">
-                        <h5 class="mb-0">Game Information</h5> </div>
+                        <h5 class="mb-0">Game Information</h5></div>
                     <div class="card-body">
-                        <p class="mb-1"><strong>Client ID:</strong> <code x-text="gameData?.client_id || 'N/A'"></code></p>
-                        <p class="mb-1"><strong>Session ID:</strong> <code x-text="gameData?.session_id || 'N/A'"></code></p>
+                        <p class="mb-1"><strong>Client ID:</strong> <code x-text="gameData?.client_id || 'N/A'"></code>
+                        </p>
+                        <p class="mb-1"><strong>Session ID:</strong> <code
+                                x-text="gameData?.session_id || 'N/A'"></code></p>
                         <p class="mb-1"><strong>Score:</strong> <code x-text="gameData?.score || '0'"></code></p>
-                        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info" x-text="gameData?.status || 'N/A'"></span></p>
+                        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info"
+                                                                       x-text="gameData?.status || 'N/A'"></span></p>
                     </div>
                 </div>
-                 <div class="card shadow-sm mb-3">
+                <div class="card shadow-sm mb-3">
                     <div class="card-header">
                         <h5 class="mb-0">AI Recommendation</h5>
                     </div>
@@ -173,7 +201,7 @@
                         <p class="small mt-2 mb-0" x-text="gameData?.client_data?.bot_reason || ''"></p>
                     </div>
                 </div>
-                 <div class="card shadow-sm mb-3">
+                <div class="card shadow-sm mb-3">
                     <div class="card-header">
                         <h5 class="mb-0">Your Decision</h5>
                     </div>
