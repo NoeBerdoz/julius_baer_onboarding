@@ -1,8 +1,9 @@
 from enum import StrEnum
 from typing import Any, Callable
-from dto.client_data import FromDescription, FromPassport, FromProfile
-from dto.client_data.FromAccount import FromAccount
 from pydantic import BaseModel
+
+from validation import FromAccount, FromDescription, FromPassport, FromProfile
+
 
 
 class ValidatedData(BaseModel):
