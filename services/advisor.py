@@ -102,6 +102,7 @@ class Advisor:
     Take into consideration that occupation history might be in the past and the might not match the actual situation.
     Pay attention to the currency when dealing with ammounts.
     Be highly critical. Reject if there's any doubt or if anything feels wrong.
+    DO NOT HALLUCINATE at any point ! 
 
     Return only JSON matching this format:
     {format_instructions}
