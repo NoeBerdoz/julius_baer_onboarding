@@ -275,3 +275,5 @@ devenv.lock
 .pre-commit-config.yaml
 
 game_files
+
+.vscode

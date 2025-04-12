@@ -10,7 +10,7 @@ class FromPassport(BaseModel):
     model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True)
     
     country: str = Field(..., min_length=3, max_length=3)  # ISO 3166-1 alpha-3
-    passport_number: str = Field(..., min_length=9, max_length=9, regex=r"^[A-Z0-9]{9}$")
+    passport_number: str = Field(..., min_length=9, max_length=9, pattern=r"^[A-Z0-9]{9}$")
 
     surname: str = Field(..., min_length=1)
     given_names: str = Field(..., min_length=1)
