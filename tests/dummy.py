@@ -19,7 +19,7 @@ def dummy_account() -> FromAccount:
         postal_code="7523 05",
         city="Assen",
         country="Netherlands",
-        name="Astrid Janneke Willems",
+        ebanking_name="Astrid Janneke Willems",
         phone_number="+31 06 34579996",
         email="astrid.willems@upcmail.nl",
     )

@@ -8,7 +8,7 @@ class FromAccount(BaseModel):
     """
     model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True)
 
-    # From account.pdf
+    # Details of the Account and Client
     account_name: str = Field(min_length=1)
     account_holder_name: str = Field(min_length=1)
     account_holder_surname: str = Field(min_length=1)
@@ -25,12 +25,19 @@ class FromAccount(BaseModel):
     reference_currency: Literal["CHF", "EUR", "USD", "Other"]
     other_currency: Optional[str] = None
 
+    # Delivery of Communication
     building_number: str = Field(min_length=1)
     street_name: str = Field(min_length=1)
     postal_code: str = Field(min_length=1)
     city: str = Field(min_length=1)
     country: str = Field(min_length=1)
 
-    name: str = Field(min_length=1)
+    # Application for e-banking
+    ebanking_name: str = Field(min_length=1)
+    @model_validator(mode='after')
+    def check_account_name_ebanking_name(self) -> Self:
+        if self.ebanking_name != self.account_name:
+            raise ValueError(f'Ebanking name is different from account name')
+        return self
     phone_number: PhoneNumber
     email: EmailStr

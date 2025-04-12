@@ -21,3 +21,8 @@ def test_invalid_phone_number() -> None:
     with pytest.raises(ValidationError):
         dummy.phone_number = "This should be invalid"
     dummy.phone_number = "+41 32 333 33 33"
+
+def test_check_account_name_ebanking_name() -> None:
+    dummy = dummy_account()
+    with pytest.raises(ValidationError):
+        dummy.ebanking_name = "This is not the same as the account name"
