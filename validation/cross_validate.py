@@ -2,7 +2,11 @@ from enum import StrEnum
 from typing import Any, Callable, Optional
 from pydantic import BaseModel
 
-from validation import FromAccount, FromDescription, FromPassport, FromProfile
+from validation.from_account import FromAccount
+from validation.from_description import FromDescription
+from validation.from_passport import FromPassport
+from validation.from_profile import FromProfile
+
 
 
 class ExtractedData(BaseModel):

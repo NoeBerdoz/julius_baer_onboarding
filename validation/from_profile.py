@@ -17,7 +17,7 @@ class FromProfile(BaseModel):
     gender: Literal["Female", "Male"]
 
     # ID information
-    passport_number: str = Field(..., min_length=9, max_length=9, regex=r"^[A-Z0-9]{9}$")
+    passport_number: str = Field(..., min_length=9, max_length=9, pattern=r"^[A-Z0-9]{9}$")
     id_type: Literal["passport"]
     id_issue_date: date
     id_expiry_date: date
