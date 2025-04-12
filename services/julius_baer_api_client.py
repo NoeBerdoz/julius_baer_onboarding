@@ -31,11 +31,11 @@ class JuliusBaerApiClient:
         """
         logging.info("[+] Starting new game session")
         start_uri = f"{self.api_uri}/game/start"
-        payload = game_start_request.model_dump()  # Convert GameStartRequestDTO to dict for JSON
+        payload = game_start_request.model_dump_json()
 
         try:
-            response = requests.post(start_uri, json=payload, headers=self.headers)
-            response.raise_for_status()  # Raise exception for HTTP errors
+            response = requests.post(start_uri, data=payload, headers=self.headers)
+            response.raise_for_status()
 
             response_json = response.json()
             validated_response = GameStartResponseDTO.model_validate(response_json)
@@ -56,7 +56,7 @@ class JuliusBaerApiClient:
         payload = game_decision_request.model_dump_json()
 
         try:
-            response = requests.post(decision_uri, headers=self.headers, data=payload)
+            response = requests.post(decision_uri, data=payload, headers=self.headers)
             response.raise_for_status()
 
             response_json = response.json()
