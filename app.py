@@ -6,9 +6,12 @@ from validation.from_passport import FromPassport
 from services.player import Player
 from utils.parsers import process_passport
 from flask import Flask
+
+import logging
 import config
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
 
 
 @app.route('/')
