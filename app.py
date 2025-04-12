@@ -22,6 +22,7 @@ def new_game():
 
 
 @app.route('/next', methods=['POST'])
+@cross_origin() # allow all origins all methods
 def next_client():
     body = request.get_json()
 

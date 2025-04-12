@@ -60,9 +60,97 @@ Alpine.data('gameManager', () => ({
             // This runs regardless of success or failure
             this.isLoading = false; // Turn off loading indicator
         });
-    }
+    },
 
-    // submitDecision(decision) { ... }
+    submitDecision(decision) {
+        // Basic validation
+        if (!decision || (decision !== 'Accept' && decision !== 'Reject')) {
+            this.error = 'Invalid decision provided.';
+            console.error('Invalid decision:', decision);
+            return;
+        }
+        if (!this.gameData || !this.gameData.session_id || !this.gameData.client_id) {
+            this.error = 'Missing game data (session or client ID). Cannot submit decision.';
+            console.error('Missing game data for decision:', this.gameData);
+            return;
+        }
+        if (this.isLoading) {
+            console.warn('Already processing a request.');
+            return; // Prevent double clicks
+        }
+        if (this.gameData.status === 'gameover') {
+             console.warn('Game is already over.');
+             return;
+        }
+
+
+        console.log(`Submitting decision: ${decision} for client: ${this.gameData.client_id}`);
+        this.isLoading = true;
+        this.error = null;
+
+        // Prepare the request body
+        const requestBody = {
+            decision: decision,
+            session_id: this.gameData.session_id,
+            client_id: this.gameData.client_id
+        };
+
+        fetch('http://127.0.0.1:5000/next', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+             if (!response.ok) {
+                 // Improved error handling for non-JSON or text responses
+                return response.text().then(text => {
+                    try {
+                        const errData = JSON.parse(text); // Try parsing as JSON
+                        throw new Error(errData.detail || `HTTP error! status: ${response.status}`);
+                    } catch (e) {
+                        throw new Error(text || `HTTP error! status: ${response.status}`); // Use text if not JSON
+                    }
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Success! Update the game state with the response
+            console.log('Decision response received:', data);
+            // Update score and status directly
+            this.gameData.score = data.score;
+            this.gameData.status = data.status;
+
+            // IMPORTANT: Update client_id and client_data ONLY if they are present in the response
+            // Otherwise, keep the old ones (needed if status is 'gameover')
+            if (data.client_id) {
+                this.gameData.client_id = data.client_id;
+            } else if (data.status !== 'gameover') {
+                // This case shouldn't happen based on spec, but good to log
+                 console.warn("Game continues but no new client ID received from /next endpoint.");
+            }
+
+            if (data.client_data) {
+                 this.gameData.client_data = data.client_data;
+                 // You might trigger logic here to update file viewers based on new client_data
+                 console.log("New client_data received, update viewers if necessary.");
+            } else if (data.status !== 'gameover') {
+                 console.warn("Game continues but no new client data received from /next endpoint.");
+            }
+
+            if (data.status === 'gameover') {
+                console.log('Game Over! Final score:', this.gameData.score);
+                // Maybe clear client_data visually or show a game over message
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting decision:', error);
+            this.error = error.message || 'Failed to submit decision.';
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
+    }
 }));
 
 Alpine.data('pdfViewer', () => ({
