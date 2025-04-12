@@ -32,7 +32,7 @@ class XValFailure(BaseModel):
 
 
 def xval_name_account_description(data: ExtractedData) -> Optional[XValFailure]:
-    if data.account.account_holder_name != data.description.full_name:
+    if data.account.account_name != data.description.full_name:
         return XValFailure(
             doc1_type=DocType.account,
             doc1_val=f"{data.account.account_holder_name=}",
