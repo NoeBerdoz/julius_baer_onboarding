@@ -167,6 +167,8 @@ Alpine.data('gameManager', () => ({
             // Update core game data
             this.gameData.score = data.score;
             this.gameData.status = data.status;
+            this.gameData.decision = data.decision;
+            this.gameData.bot_reason = data.bot_reason;
 
             // Update client_id and client_data only if present and game not over
             if (data.status !== 'gameover') {
