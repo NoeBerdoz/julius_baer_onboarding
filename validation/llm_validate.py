@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Literal, Optional
 
-class AssistantDecision(BaseModel):
-    decision: Literal["Accept", "Reject"]
+class AdvisorDecision(BaseModel):
+    answer: Literal["Accept", "Reject"]
     reason: Optional[str] = None

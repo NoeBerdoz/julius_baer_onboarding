@@ -8,7 +8,7 @@ from services.extractor import extract_profile, extract_passport, extract_descri
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
 from langchain_google_genai import ChatGoogleGenerativeAI
-from validation.llm_validate import AssistantDecision
+from validation.llm_validate import AdvisorDecision
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 
@@ -48,7 +48,7 @@ class Advisor:
         is_game_running = True
         while is_game_running:
             payload = GameDecisionRequestDTO(
-                decision=decision,
+                decision=decision.answer,
                 session_id=start_response.session_id,
                 client_id=client_id,
             )
@@ -66,15 +66,15 @@ class Advisor:
             # Handle first response from game initialization logic
             if decision_counter == 0:
                 # Store start response
-                store_game_round_data(decision, start_response, decision_counter, str(start_response.session_id) ,status)
+                store_game_round_data(decision.answer, start_response, decision_counter, str(start_response.session_id) ,status)
             else:
                 # store ongoing decision response
-                store_game_round_data(decision, decision_response, decision_counter, str(start_response.session_id), status)
+                store_game_round_data(decision.answer, decision_response, decision_counter, str(start_response.session_id), status)
 
             decision_counter += 1
             time.sleep(1)
 
-    def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
+    def make_decision(self, client_data: Dict[str, Any]) -> AdvisorDecision:
         # 1. Extraction des données
         profile = extract_profile(client_data)
         passport = extract_passport(client_data)
@@ -82,7 +82,7 @@ class Advisor:
         account = extract_account(client_data)
 
         # 2. Création du parser
-        parser = PydanticOutputParser(pydantic_object=AssistantDecision)
+        parser = PydanticOutputParser(pydantic_object=AdvisorDecision)
         format_instructions = parser.get_format_instructions()
 
         # 3. Prompt enrichi
@@ -130,11 +130,11 @@ class Advisor:
         chain = prompt | ChatGoogleGenerativeAI(model="gemini-pro") | parser
 
         # 5. Invocation
-        result: AssistantDecision = chain.invoke({
-            "passport": passport.json(),
-            "profile": profile.json(),
-            "description": description.json(),
-            "account": account.json(),
+        result: AdvisorDecision = chain.invoke({
+            "passport": passport,
+            "profile": profile,
+            "description": description,
+            "account": account,
             "format_instructions": format_instructions,
         })
 
@@ -144,4 +144,4 @@ class Advisor:
         else:
             log.info("Client accepted.")
 
-        return result.decision
+        return result
