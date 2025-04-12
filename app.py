@@ -28,8 +28,8 @@ def new_game():
         client_id=res.client_id,
         client_data=res.client_data,
         score=res.score,
-        bot_decision=bot_decision,
-        bot_reason=bot_decision,
+        bot_decision=bot_decision.answer,
+        bot_reason=bot_decision.reason,
     )
 
     return res_with_bot_decision.model_dump_json()
@@ -53,8 +53,8 @@ def next_client():
         score=res.score,
         client_id=res.client_id,
         client_data=res.client_data,
-        bot_decision=bot_decision,
-        bot_reason=""  # TODO
+        bot_decision=bot_decision.answer,
+        bot_reason=bot_decision.reason,
     )
 
     return res_with_bot_decision.model_dump_json()
