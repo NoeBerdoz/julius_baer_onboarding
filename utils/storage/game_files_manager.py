@@ -4,6 +4,8 @@ import logging
 import config
 import json
 from typing import Dict, Any
+import csv
+from pathlib import Path
 
 from dto.responses import GameStartResponseDTO, GameDecisionResponseDTO
 
@@ -74,3 +76,16 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
         logging.info(f"[+] Successfully saved API response JSON to: {json_file_path}")
     except Exception as e:
         logging.error(f"[!] Failed to save API response JSON: {e}")
+
+
+def store_decision(client_id: str, decision: str):
+    path = Path('./resources/decision_log2.csv')  # TODO clean me!!
+
+    path.parent.mkdir(parents=True, exist_ok=True)  # create dirs if needed
+
+    exists = path.exists()
+    with open(path, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not exists:
+            writer.writerow(['client_id', 'decision'])  # header
+        writer.writerow([client_id, decision])

@@ -5,7 +5,7 @@ from typing import Literal, Dict, Any
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
-from utils.storage.game_files_manager import store_game_round_data
+from utils.storage.game_files_manager import store_game_round_data, store_decision
 
 log = logging.getLogger(__name__)
 
@@ -34,21 +34,29 @@ class Player:
         start_response = self.client.start_game(payload)
         log.info('game started, session id: %s', start_response.session_id)
 
-        status = ''
         decision = self.make_decision(start_response.client_data)
 
         decision_counter = 0
+        client_id = start_response.client_id
 
-        while status not in ['gameover', 'complete']:
+        is_game_running = True
+        while is_game_running:
             payload = GameDecisionRequestDTO(
                 decision=decision,
                 session_id=start_response.session_id,
-                client_id=start_response.client_id,
+                client_id=client_id,
             )
 
+            log.info('client id: %s', client_id)
             decision_response = self.client.send_decision(payload)
             log.info(f'decision: {decision}, response status: {decision_response.status}, score: {decision_response.score}')
+
             status = decision_response.status
+            is_game_running = status not in ['gameover', 'complete']
+            if is_game_running:
+                store_decision(str(client_id), decision)
+            client_id = decision_response.client_id
+
             decision = self.make_decision(decision_response.client_data)
 
             # Handle first response from game initialization logic
@@ -60,22 +68,12 @@ class Player:
                 store_game_round_data(decision, decision_response, decision_counter, str(start_response.session_id), status)
 
             decision_counter += 1
-            time.sleep(1.5)
-
-
+            time.sleep(1)
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
         # Do your magic!
 
-        return 'Accept'
-
-        # import random
-        # return random.choice(["Accept", "Reject"])
-
-
-if __name__ == '__main__':
-    player = Player()
-    player.start()
+        return 'Accept'  # Replace me!!
 
 
 
