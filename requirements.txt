@@ -39,3 +39,4 @@ Flask==3.1.0
 annotated-types==0.7.0
 blinker==1.9.0
 langchain-google-genai==2.1.2
+flask-cors==5.0.1

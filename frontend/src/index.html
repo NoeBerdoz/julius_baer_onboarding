@@ -6,7 +6,26 @@
     <title>PDF Viewer</title>
     <script type="module" src="./js/main.js"></script>
 </head>
-<body class="p-4">
+<body x-data="gameManager" class="p-4">
+
+    <template x-if="isLoading">
+        <div class="alert alert-info" role="alert">
+            Loading game data...
+        </div>
+    </template>
+
+    <template x-if="error">
+        <div class="alert alert-danger" role="alert" x-text="error"></div>
+    </template>
+
+    <template x-if="gameData && !isLoading && !error">
+        <div>
+            <p>Game Ready!</p>
+            <p>Session ID: <code x-text="gameData.session_id"></code></p>
+            <p>First Client ID: <code x-text="gameData.client_id"></code></p>
+            </div>
+    </template>
+
     <div class="container py-4 px-3 mx-auto">
       <h1>Hello, Bootstrap and Vite!</h1>
       <button class="btn btn-primary">Primary button</button>

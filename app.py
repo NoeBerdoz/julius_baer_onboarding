@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from flask_cors import cross_origin
 
 import config
 from dto.requests import GameStartRequestDTO
@@ -12,6 +13,7 @@ jb_client = JuliusBaerApiClient()
 
 
 @app.route('/new-game', methods=['POST'])
+@cross_origin() # allow all origins all methods
 def new_game():
     game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
     res = jb_client.start_game(game_start_request)
