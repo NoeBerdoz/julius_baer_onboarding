@@ -5,7 +5,7 @@ from flask_cors import cross_origin
 
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
-from dto.responses import GameStartResponseWithBotDecisionDTO
+from dto.responses import GameStartResponseWithBotDecisionDTO, GameDecisionResponseWithBotDecisionDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 from services.player import Player
 
@@ -15,7 +15,7 @@ jb_client = JuliusBaerApiClient()
 
 
 @app.route('/new-game', methods=['POST'])
-@cross_origin() # allow all origins all methods
+@cross_origin()  # allow all origins all methods
 def new_game():
     game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
     res = jb_client.start_game(game_start_request)
@@ -28,14 +28,15 @@ def new_game():
         client_id=res.client_id,
         client_data=res.client_data,
         score=res.score,
-        bot_decision=bot_decision
+        bot_decision=bot_decision,
+        bot_reason=""  # TODO
     )
 
     return res_with_bot_decision.model_dump_json()
 
 
 @app.route('/next', methods=['POST'])
-@cross_origin() # allow all origins all methods
+@cross_origin()  # allow all origins all methods
 def next_client():
     body = request.get_json()
 
@@ -46,7 +47,17 @@ def next_client():
     make_decision_request = GameDecisionRequestDTO(decision=decision, client_id=client_id, session_id=session_id)
     res = jb_client.send_decision(make_decision_request)
 
-    return res.model_dump_json()
+    res_with_bot_decision = GameDecisionResponseWithBotDecisionDTO(
+        status=res.status,
+        score=res.score,
+        client_id=res.client_id,
+        client_data=res.client_data,
+        bot_decision="Accept",  # TODO
+        bot_reason=""  # TODO
+    )
+
+    return res_with_bot_decision.model_dump_json()
+
 
 if __name__ == '__main__':
     app.run()

@@ -13,7 +13,7 @@ class GameStartResponseDTO(BaseModel):
     score: int
 
 class GameStartResponseWithBotDecisionDTO(BaseModel):
-    """Response model for to send to frontend after a new game started."""
+    """Response model to send to frontend after a new game started."""
     message: str
     session_id: UUID
     player_id: str
@@ -21,6 +21,7 @@ class GameStartResponseWithBotDecisionDTO(BaseModel):
     client_data: Dict[str, Any]
     score: int
     bot_decision: Literal["Accept", "Reject"]
+    bot_reason: str
 
 
 class GameDecisionResponseDTO(BaseModel):
@@ -29,3 +30,12 @@ class GameDecisionResponseDTO(BaseModel):
     score: int
     client_id: Optional[UUID] = None
     client_data: Optional[Dict[str, Any]] = None
+
+class GameDecisionResponseWithBotDecisionDTO(BaseModel):
+    """Response model to send to frontend after a game decision has been sent."""
+    status: str
+    score: int
+    client_id: Optional[UUID] = None
+    client_data: Optional[Dict[str, Any]] = None
+    bot_decision: Literal["Accept", "Reject"]
+    bot_reason: str
