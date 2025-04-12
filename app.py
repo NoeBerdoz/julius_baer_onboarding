@@ -8,6 +8,8 @@ from services.player import Player
 
 app = Flask(__name__)
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
+
 
 @app.route('/')
 def hello_world():  # put application's code here

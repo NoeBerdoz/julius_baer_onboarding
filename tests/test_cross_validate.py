@@ -1,5 +1,5 @@
 from datetime import date
-from validation.cross_validate import ExtractedData
+from validation.cross_validate import ExtractedData, xval_name_account_description
 from validation.from_account import FromAccount
 from validation.from_description import FromDescription
 from validation.from_passport import FromPassport
@@ -105,3 +105,6 @@ def test_xval_name_account_description() -> None:
         passport=passport_data,
         profile=profile_data,
     )
+
+    failure = xval_name_account_description(data)
+    assert failure is None

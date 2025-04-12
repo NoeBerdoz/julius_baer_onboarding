@@ -7,6 +7,8 @@ from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
 
+log = logging.getLogger(__name__)
+
 
 class Player:
 
@@ -19,7 +21,7 @@ class Player:
 
     def play_on_separate_thread(self):
         if self._thread and self._thread.is_alive():
-            logging.warning('Game loop already running.')
+            log.warning('Game loop already running.')
             return self._thread
 
         self._thread = threading.Thread(target=self.play, daemon=True)
@@ -27,10 +29,10 @@ class Player:
         return self._thread
 
     def play(self):
-        print('playing')
+        log.info('playing')
         payload = GameStartRequestDTO(player_name=config.API_TEAM)
         start_response = self.client.start_game(payload)
-        logging.info(start_response)
+        log.info('game started, session id: %s', start_response.session_id)
 
         status = ''
         decision = self.make_decision(start_response.client_data)
@@ -45,7 +47,7 @@ class Player:
             )
 
             decision_response = self.client.send_decision(payload)
-            print(decision_response.status, decision_response.score)
+            log.info(f'decision: {decision}, response status: {decision_response.status}, score: {decision_response.score}')
             status = decision_response.status
             decision = self.make_decision(decision_response.client_data)
 
