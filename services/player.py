@@ -6,6 +6,10 @@ import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
+import csv
+import json
+import hashlib
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -15,6 +19,7 @@ class Player:
     def __init__(self):
         self.client = JuliusBaerApiClient()
         self._thread = None
+        self.cvs_path = './resources/decision_log.csv'
 
     def start(self):
         self.play()
@@ -34,12 +39,12 @@ class Player:
         start_response = self.client.start_game(payload)
         log.info('game started, session id: %s', start_response.session_id)
 
-        status = ''
         decision = self.make_decision(start_response.client_data)
 
         decision_counter = 0
 
-        while status not in ['gameover', 'complete']:
+        is_game_running = True
+        while is_game_running:
             payload = GameDecisionRequestDTO(
                 decision=decision,
                 session_id=start_response.session_id,
@@ -48,7 +53,13 @@ class Player:
 
             decision_response = self.client.send_decision(payload)
             log.info(f'decision: {decision}, response status: {decision_response.status}, score: {decision_response.score}')
+
             status = decision_response.status
+            is_game_running = status not in ['gameover', 'complete']
+            client_hash = self.hash_obj(decision_response.client_data)
+            if is_game_running:
+                self.store_decision(client_hash, decision)
+
             decision = self.make_decision(decision_response.client_data)
 
             # Handle first response from game initialization logic
@@ -62,20 +73,26 @@ class Player:
             decision_counter += 1
             time.sleep(1.5)
 
-
-
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
         # Do your magic!
 
-        return 'Accept'
+        return 'Accept'  # Replace me!!
 
-        # import random
-        # return random.choice(["Accept", "Reject"])
+    @staticmethod
+    def hash_obj(obj) -> str:
+        obj_str = json.dumps(obj, sort_keys=True)  # make dict order consistent
+        return hashlib.sha256(obj_str.encode()).hexdigest()
 
+    def store_decision(self, client_hash: str, decision: str):
+        path = Path(self.cvs_path)
+        path.parent.mkdir(parents=True, exist_ok=True)  # create dirs if needed
 
-if __name__ == '__main__':
-    player = Player()
-    player.start()
+        exists = path.exists()
+        with open(path, 'a', newline='') as f:
+            writer = csv.writer(f)
+            if not exists:
+                writer.writerow(['client_hash', 'decision'])  # header
+            writer.writerow([client_hash, decision])
 
 
 
