@@ -1,12 +1,12 @@
-from dto.requests import GameStartRequestDTO
-from services.extractor import run_extraction_chain
-from services.julius_baer_api_client import JuliusBaerApiClient
-from validation.from_passport import FromPassport
+import logging
 
-from services.player import Player
-from utils.parsers import process_passport
 from flask import Flask
+
 import config
+from dto.requests import GameStartRequestDTO
+from services.extractor import extract_profile
+from services.julius_baer_api_client import JuliusBaerApiClient
+from services.player import Player
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
