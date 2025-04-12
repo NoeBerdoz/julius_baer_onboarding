@@ -127,7 +127,7 @@ class Advisor:
         )
 
         # 4. Chaîne LLM
-        chain = prompt | ChatGoogleGenerativeAI(model="gemini-pro") | parser
+        chain = prompt | ChatGoogleGenerativeAI(model="gemini-2.0-flash") | parser
 
         # 5. Invocation
         result: AdvisorDecision = chain.invoke({
