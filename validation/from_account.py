@@ -1,6 +1,6 @@
 from typing import Literal, Optional, Self
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
-
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 class FromAccount(BaseModel):
     """
@@ -32,5 +32,5 @@ class FromAccount(BaseModel):
     country: str = Field(min_length=1)
 
     name: str = Field(min_length=1)
-    phone_number: str = Field(min_length=6)
+    phone_number: PhoneNumber
     email: EmailStr
