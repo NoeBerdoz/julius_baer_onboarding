@@ -25,10 +25,13 @@ def process_passport(passport_b64: str) -> str:
     tesseract_text = pytesseract.image_to_string(image, lang='eng')
     out_dict = {}
     if not mrz_obj is None:
+        number_raw = str(mrz_obj.number)
+        # It's not called a 'Hack'athon for nothing...
+        number = number_raw.replace("B", "8")
         out_dict = {
             "country": mrz_obj.country,
             "names": mrz_obj.names,
-            "number": mrz_obj.number,
+            "number": number,
             "surname": mrz_obj.surname,
             "mrz": mrz_obj.aux["text"],
         }
