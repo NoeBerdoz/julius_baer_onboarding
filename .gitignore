@@ -260,3 +260,16 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/flask,python
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.nix
+devenv.yaml
+.envrc
+devenv.lock
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
