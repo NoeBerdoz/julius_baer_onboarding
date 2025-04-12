@@ -10,7 +10,7 @@ GAME_FILES_DIR = config.GAME_FILES_DIR
 # Define padding for round numbers (e.g., 6 digits for up to 999,999 rounds)
 FOLDER_ROUND_PADDING = 6
 
-def store_game_round_data(response: GameStartResponseDTO | GameDecisionResponseDTO, round_number: int, session_id: str):
+def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDecisionResponseDTO, round_number: int, session_id: str, status: str):
     """
         Logs structured response data and saves associated client files.
     """
@@ -18,7 +18,7 @@ def store_game_round_data(response: GameStartResponseDTO | GameDecisionResponseD
 
     try:
         padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
-        round_folder_name = f"{padded_round}_decision"
+        round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status.lower()}"
 
         # Construct the directory path: base_dir / session_id / decision_XXXXXX
         round_dir = os.path.join(GAME_FILES_DIR, str(session_id), round_folder_name)

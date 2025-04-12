@@ -36,7 +36,6 @@ class Player:
         decision = self.make_decision(start_response.client_data)
 
         decision_counter = 0
-        store_game_round_data(start_response, decision_counter, str(start_response.session_id))
 
         while status not in ['gameover', 'complete']:
             payload = GameDecisionRequestDTO(
@@ -50,10 +49,17 @@ class Player:
             status = decision_response.status
             decision = self.make_decision(decision_response.client_data)
 
-            store_game_round_data(decision_response, decision_counter, str(start_response.session_id))
+            # Handle first response from game initialization logic
+            if decision_counter == 0:
+                # Store start response
+                store_game_round_data(decision, start_response, decision_counter, str(start_response.session_id) ,status)
+            else:
+                # store ongoing decision response
+                store_game_round_data(decision, decision_response, decision_counter, str(start_response.session_id), status)
 
             decision_counter += 1
             time.sleep(1.5)
+
 
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
