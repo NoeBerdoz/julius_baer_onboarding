@@ -7,6 +7,10 @@ from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.extractor import extract_profile, extract_passport, extract_description, extract_account
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
+from langchain_google_genai import ChatGoogleGenerativeAI
+from validation.llm_validate import AssistantDecision
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import PydanticOutputParser
 
 
 log = logging.getLogger(__name__)
@@ -71,31 +75,73 @@ class Player:
             time.sleep(1)
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
-        # Data extraction
+        # 1. Extraction des données
         profile = extract_profile(client_data)
         passport = extract_passport(client_data)
         description = extract_description(client_data)
         account = extract_account(client_data)
 
-        prompt_template = (
-            "You are a helpful assistant at a private bank.\n"
-            "Your task is to accept or reject a new client's application for private banking.\n\n"
-            "Only reject the application if there is an inconsistency in the data provided.\n"
-            "Inconsistencies include:\n"
-            "- Incorrect data (e.g., mismatched or invalid information)\n"
-            "- Incomplete data (e.g., missing required fields)\n\n"
-            "Return only JSON matching this format:\n"
-            "{format_instructions}\n\n"
-            "Here is the extracted passport text:\n"
-            "{processed_text}\n\n"
-            "Use the extracted profile, description, and account details to check consistency."
+        # 2. Création du parser
+        parser = PydanticOutputParser(pydantic_object=AssistantDecision)
+        format_instructions = parser.get_format_instructions()
+
+        # 3. Prompt enrichi
+        prompt = ChatPromptTemplate.from_template(
+            """You are a compliance analyst in a private bank.
+    You are given structured data extracted from four different documents of a new client application.
+
+    Your task is to accept or reject the client's application for private banking.
+
+    Only reject the application if there is an inconsistency in the data provided.
+    Inconsistencies include:
+    - Incorrect data (e.g., mismatched or invalid information)
+    - Incomplete data (e.g., missing required fields)
+    - Implausible or suspicious details
+
+    Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
+
+    Be highly critical. Reject if there's any doubt or if anything feels wrong.
+
+    Return only JSON matching this format:
+    {format_instructions}
+
+    ---
+
+    **Document: Passport**
+    {passport}
+
+    ---
+
+    **Document: Profile**
+    {profile}
+
+    ---
+
+    **Document: Description**
+    {description}
+
+    ---
+
+    **Document: Account**
+    {account}"""
         )
 
-        # You'd insert the format instructions and passport text here before calling the LLM
-        # For example:
-        # final_prompt = prompt_template.format(
-        #     format_instructions=your_format_instructions,
-        #     processed_text=passport['text']
-        # )
+        # 4. Chaîne LLM
+        chain = prompt | ChatGoogleGenerativeAI(model="gemini-pro") | parser
 
-        return 'Accept'  # Replace me!!
+        # 5. Invocation
+        result: AssistantDecision = chain.invoke({
+            "passport": passport.json(),
+            "profile": profile.json(),
+            "description": description.json(),
+            "account": account.json(),
+            "format_instructions": format_instructions,
+        })
+
+        # 6. Logs et retour
+        if result.decision == "Reject":
+            log.warning(f"Client rejected. Reason: {result.reason}")
+        else:
+            log.info("Client accepted.")
+
+        return result.decision

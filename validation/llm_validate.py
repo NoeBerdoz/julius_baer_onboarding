@@ -1,7 +1,6 @@
-# TODO
-# account.reference_currency corresponds to passport.country
+from pydantic import BaseModel
+from typing import Literal, Optional
 
-# account.country ~ passport.country
-# account.country ~ description.nationality
-
-# account.city is in account.country 
+class AssistantDecision(BaseModel):
+    decision: Literal["Accept", "Reject"]
+    reason: Optional[str] = None
