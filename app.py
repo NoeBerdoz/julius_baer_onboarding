@@ -5,7 +5,9 @@ from flask_cors import cross_origin
 
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
+from dto.responses import GameStartResponseWithBotDecisionDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
+from services.player import Player
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
@@ -17,8 +19,19 @@ jb_client = JuliusBaerApiClient()
 def new_game():
     game_start_request = GameStartRequestDTO(player_name=config.API_TEAM)
     res = jb_client.start_game(game_start_request)
+    bot_decision = Player().make_decision(res.client_data)
 
-    return res.model_dump_json()
+    res_with_bot_decision = GameStartResponseWithBotDecisionDTO(
+        message=res.message,
+        session_id=res.session_id,
+        player_id=res.player_id,
+        client_id=res.client_id,
+        client_data=res.client_data,
+        score=res.score,
+        bot_decision=bot_decision
+    )
+
+    return res_with_bot_decision.model_dump_json()
 
 
 @app.route('/next', methods=['POST'])
