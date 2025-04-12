@@ -7,8 +7,6 @@ from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
 import csv
-import json
-import hashlib
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -57,11 +55,10 @@ class Player:
             log.info(f'decision: {decision}, response status: {decision_response.status}, score: {decision_response.score}')
 
             status = decision_response.status
-            client_id = decision_response.client_id
             is_game_running = status not in ['gameover', 'complete']
-            client_hash = self.hash_obj(decision_response.client_data)
             if is_game_running:
-                self.store_decision(client_hash, decision)
+                self.store_decision(str(client_id), decision)
+            client_id = decision_response.client_id
 
             decision = self.make_decision(decision_response.client_data)
 
@@ -80,11 +77,6 @@ class Player:
         # Do your magic!
 
         return 'Accept'  # Replace me!!
-
-    @staticmethod
-    def hash_obj(obj) -> str:
-        obj_str = json.dumps(obj, sort_keys=True)  # make dict order consistent
-        return hashlib.sha256(obj_str.encode()).hexdigest()
 
     def store_decision(self, client_hash: str, decision: str):
         path = Path(self.cvs_path)
