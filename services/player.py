@@ -4,7 +4,7 @@ import time
 from typing import Literal, Dict, Any
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
-from services.extractor import extract_profile, extract_passport, extract_description
+from services.extractor import extract_profile, extract_passport, extract_description, extract_account
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
 
@@ -75,5 +75,16 @@ class Player:
         profile = extract_profile(client_data)
         passport = extract_passport(client_data)
         description = extract_description(client_data)
+        account = extract_account(client_data)
+
+        prompt_template = (
+            "You are a helpful assistant!\n"
+            ""
+            
+            "Extract the following information from the provided passport text.\n"
+            "Return only JSON matching this format:\n{format_instructions}\n\n"
+            "Pay special attention to the passport number\n"
+            "Passport text:\n{processed_text}"
+        )
 
         return 'Accept'  # Replace me!!
