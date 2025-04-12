@@ -105,6 +105,12 @@ def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDe
                 with open(previous_json_path, 'r') as f:
                     prev_response_data = json.load(f)
                 store_decoded_files(prev_response_data, previous_round_folder)
+                previous_folder_path_instance = Path(previous_round_folder)
+                parts = previous_folder_path_instance.name.rsplit("_", maxsplit=1)
+                gameover_folder_name = f"{parts[0]}_gameover"
+                new_gameover_path = previous_folder_path_instance.parent / gameover_folder_name
+                previous_folder_path_instance.rename(new_gameover_path)
+                logging.info(f"[+] Renamed gameover folder: {new_gameover_path}")
         else:
             padded_round = str(round_number).zfill(FOLDER_ROUND_PADDING)
             round_folder_name = f"{padded_round}_decision_{decision.lower()}_{status}"
