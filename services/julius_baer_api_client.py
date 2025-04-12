@@ -1,9 +1,7 @@
-from typing import Dict, Any
-
 import requests
-
 import config
-from dto.requests import GameStartRequest, GameDecisionRequest
+from typing import Dict, Any
+from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 
 
 class JuliusBaerApiClient:
@@ -18,7 +16,7 @@ class JuliusBaerApiClient:
         self.api_key = config.API_KEY
         self.api_team = config.API_TEAM
 
-    def start_game(self, game_start_request: GameStartRequest) -> Dict[str, Any]:
+    def start_game(self, game_start_request: GameStartRequestDTO) -> Dict[str, Any]:
         """
         Start a new game session.
 
@@ -47,7 +45,7 @@ class JuliusBaerApiClient:
 
         return data
 
-    def make_decision(self, game_decision_request: GameDecisionRequest) -> Dict[str, Any]:
+    def make_decision(self, game_decision_request: GameDecisionRequestDTO) -> Dict[str, Any]:
         """
         Make a game decision (Accept or Reject).
 
