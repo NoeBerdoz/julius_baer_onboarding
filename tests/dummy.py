@@ -1,4 +1,5 @@
 from datetime import date
+import glob
 import json
 from typing import Any
 import config
@@ -111,10 +112,16 @@ def dummy_data() -> ExtractedData:
         profile=dummy_profile(),
     )
 
-def dummy_client_data() -> dict[str, Any]:
-    # TODO make generic
-    resp_path = f"{config.GAME_FILES_DIR}/fc3b1f5a-296d-4cd0-a560-cfa5a6f8d302/000000_decision_accept_active/000000_response.json"
-    out = {}
-    with open(resp_path, "r") as file:
-        out = json.loads(file.read())["client_data"]
+def dummy_client_data() -> list[dict[str, Any]]:
+    glob_str = f"{config.GAME_FILES_DIR}/**/*_response.json"
+    responses = glob.glob(glob_str, recursive=True)
+    out = []
+    for resp_path in responses:
+        c_data = None
+        with open(resp_path, "r") as file:
+            loaded = json.loads(file.read())
+            print(f"Loaded {resp_path}")
+            c_data = loaded["client_data"]
+        if not c_data is None:
+            out.append(c_data)
     return out
