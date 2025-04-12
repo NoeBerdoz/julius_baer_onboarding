@@ -1,7 +1,7 @@
 import base64
 import io
 from tempfile import NamedTemporaryFile
-from PIL import Image
+from PIL import Image, ImageEnhance
 import pytesseract
 from passporteye import read_mrz
 import json
@@ -22,6 +22,8 @@ def process_passport(passport_b64: str) -> str:
             mrz_obj = read_mrz(read_img)
 
     image = Image.open(io.BytesIO(image_bytes))
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2.0)  # 2.0 = double le contraste (1.0 = inchangé)
     tesseract_text = pytesseract.image_to_string(image, lang='eng')
     out_dict = {}
     if not mrz_obj is None:
