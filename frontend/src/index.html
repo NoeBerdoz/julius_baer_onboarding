@@ -2,80 +2,182 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PDF Viewer</title>
-    <script type="module" src="./js/main.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Dossier Review</title>
+    <script type="module" src="./js/main.js" defer></script>
+    <style>
+        .document-viewer iframe {
+            min-height: 600px; /* Ensure iframe takes up space */
+            width: 100%;
+            border: 1px solid #dee2e6; /* Bootstrap border color */
+            border-radius: 0.375rem; /* Bootstrap border radius */
+        }
+
+        .sticky-top-column {
+            position: sticky;
+            top: 1rem; /* Adjust based on your navbar height if any */
+            height: calc(100vh - 2rem); /* Example height, adjust as needed */
+            overflow-y: auto;
+        }
+
+        /* Ensure templates don't cause layout shifts when hidden */
+        template {
+            display: none;
+        }
+    </style>
 </head>
-<body x-data="gameManager" class="p-4">
+<body x-data="gameManager" class="bg-light">
+
+<div class="container-fluid p-3">
 
     <template x-if="isLoading">
-        <div class="alert alert-info" role="alert">
-            Loading game data...
+        <div class="alert alert-info position-absolute top-50 start-50 translate-middle z-index-master" role="alert">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            Loading Dossier Data...
         </div>
     </template>
 
-    <template x-if="error">
-        <div class="alert alert-danger" role="alert" x-text="error"></div>
+    <template x-if="error && !isLoading">
+        <div class="alert alert-danger position-absolute top-50 start-50 translate-middle z-index-master" role="alert"
+             x-text="error"></div>
     </template>
 
-    <template x-if="gameData && !isLoading && !error">
-        <div>
-            <p>Game Ready!</p>
-            <p>Session ID: <code x-text="gameData.session_id"></code></p>
-            <p>First Client ID: <code x-text="gameData.client_id"></code></p>
+    <div x-show="gameData && !isLoading && !error" class="row g-3">
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Client Documents</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="docTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="doc1-tab" data-bs-toggle="tab"
+                                    data-bs-target="#doc1-pane" type="button" role="tab" aria-controls="doc1-pane"
+                                    aria-selected="true">Passport
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="doc2-tab" data-bs-toggle="tab" data-bs-target="#doc2-pane"
+                                    type="button" role="tab" aria-controls="doc2-pane" aria-selected="false">Account
+                                Overview
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="doc3-tab" data-bs-toggle="tab" data-bs-target="#doc3-pane"
+                                    type="button" role="tab" aria-controls="doc3-pane" aria-selected="false">Proof of
+                                Address
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="doc4-tab" data-bs-toggle="tab" data-bs-target="#doc4-pane"
+                                    type="button" role="tab" aria-controls="doc4-pane" aria-selected="false">Additional
+                                Doc
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3 document-viewer" id="docTabContent">
+                        <div class="tab-pane fade show active" id="doc1-pane" role="tabpanel" aria-labelledby="doc1-tab"
+                             tabindex="0">
+                            <div x-data="pdfViewer()" x-init="loadPdf()">
+                                <template x-if="pdfUrl">
+                                    <iframe :src="pdfUrl" type="application/pdf"></iframe>
+                                </template>
+                                <template x-if="!pdfUrl">
+                                    <div class="alert alert-secondary">Loading document...</div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="doc2-pane" role="tabpanel" aria-labelledby="doc2-tab"
+                             tabindex="0">
+                            <div class="alert alert-secondary">Document 2 placeholder. Needs dynamic loading logic based
+                                on `gameData.client_data.documents`.
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="doc3-pane" role="tabpanel" aria-labelledby="doc3-tab"
+                             tabindex="0">
+                            <div class="alert alert-secondary">Document 3 placeholder.</div>
+                        </div>
+                        <div class="tab-pane fade" id="doc4-pane" role="tabpanel" aria-labelledby="doc4-tab"
+                             tabindex="0">
+                            <div class="alert alert-secondary">Document 4 placeholder.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-    </template>
-
-    <template x-if="gameData && !isLoading && !error">
-        <div>
-            <p>Current Score: <strong x-text="gameData.score"></strong></p>
-            <p>Status: <span x-text="gameData.status"></span></p>
-            <p>Session ID: <code x-text="gameData.session_id"></code></p>
-            <p>Client ID to process: <code x-text="gameData.client_id"></code></p>
-
-            <hr>
-
-            <div x-show="gameData.status !== 'gameover'">
-                 <h4>Make Decision:</h4>
-                 <button
-                     type="button"
-                     class="btn btn-success me-2"
-                     @click="submitDecision('Accept')"
-                     :disabled="isLoading">
-                     Accept
-                 </button>
-                 <button
-                     type="button"
-                     class="btn btn-danger"
-                     @click="submitDecision('Reject')"
-                     :disabled="isLoading">
-                     Reject
-                 </button>
-            </div>
-
-             <div x-show="gameData.status === 'gameover'" class="alert alert-warning mt-3">
-                 Game Over! Final Score: <strong x-text="gameData.score"></strong>
-             </div>
-
         </div>
-    </template>
 
-    <div class="container py-4 px-3 mx-auto">
-      <h1>Hello, Bootstrap and Vite!</h1>
-      <button class="btn btn-primary">Primary button</button>
-    </div>
-    <div x-data="pdfViewer()" class="space-y-4">
-        <button @click="loadPdf" class="px-4 py-2 bg-blue-500 text-white rounded">Load PDF</button>
+        <div class="col-lg-4">
+            <div class="sticky-top-column">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Game Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Session ID:</strong> <code x-text="gameData?.session_id || 'N/A'"></code></p>
+                        <p class="mb-1"><strong>Client ID to process:</strong> <code x-text="gameData?.client_id || 'N/A'"></code></p>
+                        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info" x-text="gameData?.status || 'N/A'"></span></p>
+                    </div>
+                </div>
 
-        <template x-if="pdfUrl">
-            <iframe
-                    :src="pdfUrl"
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                    class="border border-gray-400 rounded"
-            ></iframe>
-        </template>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">AI Recommendation</h5>
+                    </div>
+                    <div class="card-body">
+                        <template x-if="gameData?.client_data?.ai_recommendation === 'Accept'">
+                            <div class="alert alert-success p-2 mb-0"
+                                 x-text="gameData.client_data.ai_recommendation"></div>
+                        </template>
+                        <template x-if="gameData?.client_data?.ai_recommendation === 'Reject'">
+                            <div class="alert alert-danger p-2 mb-0"
+                                 x-text="gameData.client_data.ai_recommendation"></div>
+                        </template>
+                        <template x-if="!gameData?.client_data?.ai_recommendation">
+                            <div class="alert alert-warning p-2 mb-0">Processing...</div>
+                        </template>
+                        <p class="small mt-2 mb-0" x-text="gameData?.client_data?.ai_explanation || ''"></p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Decision</h5>
+                    </div>
+                    <div class="card-body">
+                        <template x-if="gameData?.status !== 'gameover'">
+                            <div><p class="card-text">Review the documents and AI recommendation before making a
+                                decision.</p>
+                                <div class="d-grid gap-2">
+                                    <button
+                                            type="button"
+                                            class="btn btn-success"
+                                            @click="submitDecision('Accept')"
+                                            :disabled="isLoading">
+                                        Accept Dossier
+                                    </button>
+                                    <button
+                                            type="button"
+                                            class="btn btn-danger"
+                                            @click="submitDecision('Reject')"
+                                            :disabled="isLoading">
+                                        Reject Dossier
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="gameData?.status === 'gameover'">
+                            <div class="alert alert-warning mb-0">
+                                All dossiers processed!
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 </body>
 </html>
