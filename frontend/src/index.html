@@ -122,6 +122,13 @@
                         </div>
                         <div class="tab-pane fade" id="profile-docx-pane" role="tabpanel"
                              aria-labelledby="profile-docx-tab" tabindex="0">
+                            <template x-if="gameData?.client_data?.profile">
+                                <a :href="'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,'+gameData.client_data.profile"
+                                   :download="(gameData?.client_id || 'client') + '_profile.docx'"
+                                   class="btn btn-primary mt-1 mb-2">
+                                    Download Original (.docx)
+                                </a>
+                            </template>
                             <template x-if="profileHtml">
                                 <div x-html="profileHtml" class="docx-preview border rounded p-3 bg-white"></div>
                             </template>
@@ -137,17 +144,6 @@
                             </template>
                             <template x-if="!gameData?.client_data && !isLoading">
                                 <div class="alert alert-secondary">Loading document...</div>
-                            </template>
-                            <template x-if="typeof mammoth === 'undefined'">
-                                <div class="alert alert-warning">Cannot preview DOCX. Required library (Mammoth.js) is
-                                    missing.
-                                </div>
-                                <a x-show="gameData?.client_data?.profile_b64"
-                                   :href="'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,'+gameData.client_data.profile_b64"
-                                   :download="(gameData?.client_id || 'client') + '_profile.docx'"
-                                   class="btn btn-secondary mt-2">
-                                    Download Original (.docx)
-                                </a>
                             </template>
                         </div>
                         <div class="tab-pane fade" id="description-txt-pane" role="tabpanel"
