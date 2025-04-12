@@ -139,7 +139,7 @@ class Advisor:
         })
 
         # 6. Logs et retour
-        if result.decision == "Reject":
+        if result.answer == "Reject":
             log.warning(f"Client rejected. Reason: {result.reason}")
         else:
             log.info("Client accepted.")
