@@ -7,7 +7,7 @@ from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from services.extractor import extract_profile, extract_passport, extract_description, extract_account
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai.chat_models import ChatOpenAI
 from validation.llm_validate import AdvisorDecision
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
@@ -129,7 +129,7 @@ class Advisor:
         )
 
         # 4. Chaîne LLM
-        chain = prompt | ChatGoogleGenerativeAI(model="gemini-2.0-flash") | parser
+        chain = prompt | ChatOpenAI(model="gpt-4o-mini") | parser
 
         # 5. Invocation
         result: AdvisorDecision = chain.invoke({

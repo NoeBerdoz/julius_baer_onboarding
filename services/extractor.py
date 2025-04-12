@@ -4,7 +4,7 @@ from typing import Callable, Type, Any, TypeVar
 from langchain_core.runnables import Runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai.chat_models import ChatOpenAI
 from pydantic import BaseModel
 
 from utils.parsers import process_profile, process_passport, process_account
@@ -73,7 +73,7 @@ def extract_passport(client_data: dict[str, Any]) -> FromPassport:
 
 
 def extract_profile(client_data: dict[str, Any]) -> FromProfile:
-    passport_data = client_data.get("profile")
+    profile_data = client_data.get("profile")
 
     prompt_template = (
         "Extract the following information from the provided text.\n"
@@ -83,7 +83,7 @@ def extract_profile(client_data: dict[str, Any]) -> FromProfile:
     )
 
     result = __run_extraction_chain(
-        raw_file_data=passport_data,
+        raw_file_data=profile_data,
         file_processor=process_profile,
         pydantic_model=FromProfile,
         prompt_template=prompt_template,
@@ -125,7 +125,7 @@ def __run_extraction_chain(
 
     prompt = ChatPromptTemplate.from_template(prompt_template)
 
-    chain: Runnable = prompt | ChatGoogleGenerativeAI(model=model_name) | parser
+    chain: Runnable = prompt | ChatOpenAI(model="gpt-4o-mini") | parser
 
     result = chain.invoke({
         "processed_text": processed_text,
