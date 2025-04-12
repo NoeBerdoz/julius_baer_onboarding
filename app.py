@@ -7,6 +7,7 @@ import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from dto.responses import GameStartResponseWithBotDecisionDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
+from services.player import Player
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
