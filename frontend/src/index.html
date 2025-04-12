@@ -26,6 +26,40 @@
             </div>
     </template>
 
+    <template x-if="gameData && !isLoading && !error">
+        <div>
+            <p>Current Score: <strong x-text="gameData.score"></strong></p>
+            <p>Status: <span x-text="gameData.status"></span></p>
+            <p>Session ID: <code x-text="gameData.session_id"></code></p>
+            <p>Client ID to process: <code x-text="gameData.client_id"></code></p>
+
+            <hr>
+
+            <div x-show="gameData.status !== 'gameover'">
+                 <h4>Make Decision:</h4>
+                 <button
+                     type="button"
+                     class="btn btn-success me-2"
+                     @click="submitDecision('Accept')"
+                     :disabled="isLoading">
+                     Accept
+                 </button>
+                 <button
+                     type="button"
+                     class="btn btn-danger"
+                     @click="submitDecision('Reject')"
+                     :disabled="isLoading">
+                     Reject
+                 </button>
+            </div>
+
+             <div x-show="gameData.status === 'gameover'" class="alert alert-warning mt-3">
+                 Game Over! Final Score: <strong x-text="gameData.score"></strong>
+             </div>
+
+        </div>
+    </template>
+
     <div class="container py-4 px-3 mx-auto">
       <h1>Hello, Bootstrap and Vite!</h1>
       <button class="btn btn-primary">Primary button</button>
