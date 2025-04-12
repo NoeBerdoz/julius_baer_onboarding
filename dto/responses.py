@@ -1,10 +1,9 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 from typing import Dict, Optional, Any
 from uuid import UUID
 
 
-@dataclass
-class GameStartResponse:
+class GameStartResponseDTO(BaseModel):
     """Response model for a new game started."""
     message: str
     session_id: UUID
@@ -14,8 +13,7 @@ class GameStartResponse:
     score: int
 
 
-@dataclass
-class GameDecisionResponse:
+class GameDecisionResponseDTO(BaseModel):
     """Response model for a game decision result."""
     status: str
     score: int

@@ -1,7 +1,9 @@
 import requests
 import config
+import logging
 from typing import Dict, Any
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
+from dto.responses import GameStartResponseDTO
 
 
 class JuliusBaerApiClient:
@@ -12,38 +14,46 @@ class JuliusBaerApiClient:
     """
 
     def __init__(self):
+        self.client_id = None
+        self.session_id = None
         self.api_uri = config.API_URI
         self.api_key = config.API_KEY
         self.api_team = config.API_TEAM
 
-    def start_game(self, game_start_request: GameStartRequestDTO) -> Dict[str, Any]:
-        """
-        Start a new game session.
+        if not self.api_uri or not self.api_key or not self.api_team:
+            logging.error("[!] API credentials are not configured, edit .env file")
 
-        Args:
-            player_name: Name of the player.
-
-        Returns:
-            Dict containing the game start response with session_id, player_id, etc.
-        """
-        url = f"{self.api_uri}/game/start"
-        payload = {"player_name": game_start_request.player_name}
-
-        headers = {
+        self.headers = {
             "x-api-key": self.api_key,
             "Content-Type": "application/json"
         }
 
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise exception for HTTP errors
+    def start_game(self, game_start_request: GameStartRequestDTO) -> GameStartResponseDTO:
+        """
+        Start a new game session.
+        """
+        logging.info("[+] Starting new game session")
+        start_url = f"{self.api_uri}/game/start"
+        payload = game_start_request.model_dump()  # Convert GameStartRequestDTO to dict for JSON
 
-        data = response.json()
+        try:
+            response = requests.post(start_url, json=payload, headers=self.headers)
+            response.raise_for_status()  # Raise exception for HTTP errors
 
-        # Store session_id and client_id for convenience in future calls
-        self.session_id = data.get("session_id")
-        self.client_id = data.get("client_id")
+            response_data = response.json()
+            validated_response = GameStartResponseDTO.model_validate(response_data)
+            logging.info(f"Game started successfully. Session: {validated_response.session_id}, Client: {validated_response.client_id}")
 
-        return data
+
+            # Store session_id and client_id for future calls
+            self.session_id = validated_response.session_id
+            self.client_id = validated_response.client_id
+
+            return validated_response
+
+        except Exception as e:
+            logging.error(f"[!] Failed to start game session: {e}")
+            raise
 
     def make_decision(self, game_decision_request: GameDecisionRequestDTO) -> Dict[str, Any]:
         """
