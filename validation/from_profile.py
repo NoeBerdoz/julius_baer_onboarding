@@ -24,7 +24,7 @@ class FromProfile(BaseModel):
 
     # Contact
     phone: str = Field(..., min_length=8)
-    email: EmailStr
+    email: str = Field(min_length=5)
     address: str
 
     # Personal info

@@ -40,4 +40,4 @@ class FromAccount(BaseModel):
             raise ValueError(f'Ebanking name is different from account name')
         return self
     phone_number: str = Field(..., min_length=8)
-    email: EmailStr #TODO change ?
+    email: str = Field(min_length=5)
