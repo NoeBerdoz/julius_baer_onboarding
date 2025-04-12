@@ -29,7 +29,7 @@ class JuliusBaerApiClient:
         """
         Start a new game session.
         """
-        logging.info("[+] Starting new game session")
+        logging.debug("[+] Starting new game session")
         start_uri = f"{self.api_uri}/game/start"
         payload = game_start_request.model_dump_json()
 
@@ -39,7 +39,7 @@ class JuliusBaerApiClient:
 
             response_json = response.json()
             validated_response = GameStartResponseDTO.model_validate(response_json)
-            logging.info(f"Game started successfully. Session: {validated_response.session_id}, Client: {validated_response.client_id}")
+            logging.debug(f"Game started successfully. Session: {validated_response.session_id}, Client: {validated_response.client_id}")
 
             return validated_response
         except Exception as e:
@@ -50,7 +50,7 @@ class JuliusBaerApiClient:
         """
         Make a game decision (Accept or Reject).
         """
-        logging.info("[+] Sending decision")
+        logging.debug("[+] Sending decision")
         decision_uri = f"{self.api_uri}/game/decision"
 
         payload = game_decision_request.model_dump_json()
@@ -61,7 +61,7 @@ class JuliusBaerApiClient:
 
             response_json = response.json()
             validated_response = GameDecisionResponseDTO.model_validate(response_json)
-            logging.info("[+] Decision sent successfully")
+            logging.debug("[+] Decision sent successfully")
 
             return validated_response
         except Exception as e:
