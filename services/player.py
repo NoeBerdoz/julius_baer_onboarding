@@ -4,6 +4,7 @@ import time
 from typing import Literal, Dict, Any
 import config
 from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
+from services.extractor import extract_profile
 from services.julius_baer_api_client import JuliusBaerApiClient
 from utils.storage.game_files_manager import store_game_round_data, store_decision
 
@@ -71,6 +72,10 @@ class Player:
             time.sleep(1)
 
     def make_decision(self, client_data: Dict[str, Any]) -> Literal["Accept", "Reject"]:
+        # Data extraction
+
+        profile = extract_profile(client_data)
+
         # Do your magic!
 
         return 'Accept'  # Replace me!!
