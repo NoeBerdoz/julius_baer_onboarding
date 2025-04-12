@@ -23,13 +23,15 @@ def process_passport(passport_b64: str) -> str:
 
     image = Image.open(io.BytesIO(image_bytes))
     tesseract_text = pytesseract.image_to_string(image, lang='eng')
-    out_dict = {
-        "country": mrz_obj.country,
-        "names": mrz_obj.names,
-        "number": mrz_obj.number,
-        "surname": mrz_obj.surname,
-        "mrz": mrz_obj.aux["text"],
-        "raw": tesseract_text
-    }
+    out_dict = {}
+    if not mrz_obj is None:
+        out_dict = {
+            "country": mrz_obj.country,
+            "names": mrz_obj.names,
+            "number": mrz_obj.number,
+            "surname": mrz_obj.surname,
+            "mrz": mrz_obj.aux["text"],
+        }
+    out_dict["raw"] = tesseract_text
     out = json.dumps(out_dict)
     return out
