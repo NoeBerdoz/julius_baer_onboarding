@@ -273,3 +273,5 @@ devenv.lock
 
 # pre-commit
 .pre-commit-config.yaml
+
+game_files
