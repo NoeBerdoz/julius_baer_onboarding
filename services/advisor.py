@@ -95,20 +95,21 @@ class Advisor:
     Only reject the application if there is an inconsistency in the data provided.
     
     Inconsistencies include:
-    - Incorrect names used accros all docs, what is stated in one of the doc should be true on other documents.
+    - Incorrect names, sirnames used accros all docs, what is stated in one of the doc should be true on other documents.
     - Typos in any fields 
     - Incorrect validity date passport or documents
     - Wrong address, city, street name, zip code and country. Some don't exist
     - Multiple country of domiciles
     - Implausible or suspicious details
     - Amounts in profile and the description file
-    - Incorrect nationality regarding the passport data
-
-    Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
-    Take into consideration that occupation history might be in the past not match the actual situation.
-    Pay attention to the currency when dealing with amounts.
-    Be highly critical. Reject if there's any doubt or if anything feels wrong.
-    DO NOT HALLUCINATE at any point ! 
+    - Incorrect nationality between passport document and account documents.
+    
+    Instructions:
+    - Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
+    - Take into consideration that occupation history might be in the past not match the actual situation.
+    - Pay attention to the currency when dealing with amounts.
+    - Be highly critical. Reject if there's any doubt or if anything feels wrong.
+    - DO NOT HALLUCINATE at any point ! 
 
     Return only JSON matching this format:
     {format_instructions}
