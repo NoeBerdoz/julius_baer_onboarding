@@ -128,3 +128,24 @@ cd frontend
 npm run dev
 ```
 
+# Screenshots of the app
+The user has a view to see all documents  
+![image](https://github.com/user-attachments/assets/d8a8f4eb-2c4c-408b-aa5d-d51649a04a46)
+
+When the AI suggest that the dossier is fine
+![image](https://github.com/user-attachments/assets/1f459e3d-2b78-4f99-a08f-be3ea53fa845)
+
+When the AI suggest that the dossier has an issue
+![image](https://github.com/user-attachments/assets/b137dfa0-bbc2-4bfe-bd89-89e22f9300cf)
+
+The AI adapts to each dossier
+![image](https://github.com/user-attachments/assets/22e04cda-f54d-4a07-9dfa-5b5eceb2618a)
+
+The user makes the final decision and has interface feedbacks, loadings, game over screen...
+![image](https://github.com/user-attachments/assets/66b1e9aa-2a0a-4291-9d3d-839b8bbea589)
+
+
+
+
+
+
