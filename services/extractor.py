@@ -1,13 +1,15 @@
 import base64
 import binascii
+import io
+from PIL import Image
+from langchain_core.messages import HumanMessage, SystemMessage
 from typing import Callable, Type, Any, TypeVar
 from langchain_core.runnables import Runnable
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_openai.chat_models import ChatOpenAI
 from pydantic import BaseModel
-
-from utils.parsers import process_profile, process_passport, process_account, process_description
+from utils.parsers import process_profile, process_account, process_description ,process_passport
 from validation.from_account import FromAccount
 from validation.from_passport import FromPassport
 from validation.from_profile import FromProfile
@@ -54,23 +56,43 @@ def extract_account(client_data: dict[str, Any])-> FromAccount:
 
 
 def extract_passport(client_data: dict[str, Any]) -> FromPassport:
-    passport_data = client_data.get("passport")
+    raw_file_data = client_data.get("passport")
 
-    prompt_template = (
-        "Extract the following information from the provided passport text.\n"
-        "Return only JSON matching this format:\n{format_instructions}\n\n"
-        "Pay special attention to the passport number\n"
-        "Passport text:\n{processed_text}"
-    )
+    if not raw_file_data:
+        raise ValueError("Missing passport base64 data")
 
-    result = __run_extraction_chain(
-        raw_file_data=passport_data,
-        file_processor=process_passport,
-        pydantic_model=FromPassport,
-        prompt_template=prompt_template,
-    )
+    try:
+        base64.b64decode(raw_file_data, validate=True)
+    except binascii.Error as e:
+        raise ValueError(f"Invalid base64 data: {e}")
 
-    return result
+    # Décodage image
+    image_bytes = base64.b64decode(raw_file_data)
+    image = Image.open(io.BytesIO(image_bytes))
+
+    # Parser Pydantic
+    parser = PydanticOutputParser(pydantic_object=FromPassport)
+    format_instructions = parser.get_format_instructions()
+
+    # LLM gpt-4o
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+    # Messages multimodaux
+    messages = [
+        SystemMessage(content="Tu es un assistant qui lit les passeports."),
+        HumanMessage(
+            content=[
+                {"type": "text", "text": f"Lis ce passeport et retourne les infos suivantes au format JSON :\n{format_instructions}"},
+                {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + raw_file_data}},
+            ]
+        )
+    ]
+
+    # Appel direct du LLM (hors prompt chain)
+    result = llm.invoke(messages)
+
+    # Parsing structuré
+    return parser.parse(result.content)
 
 
 def extract_profile(client_data: dict[str, Any]) -> FromProfile:

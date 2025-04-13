@@ -1,42 +1,39 @@
 import base64
 import io
-from tempfile import NamedTemporaryFile
-from PIL import Image, ImageEnhance
-import pytesseract
-from passporteye import read_mrz
-import json
+from PIL import Image
+from langchain_openai import ChatOpenAI
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from validation.from_passport import FromPassport
 
 def process_passport(passport_b64: str) -> str:
     """
     Traite le passport :
     - Décodage de l'image en base64.
-    - Application de l'OCR pour extraire le texte.
-
-    :param passport_b64: Chaîne base64 représentant l'image du passport.
-    :return: Texte extrait de l'image.
+    - Envoi à GPT-4o avec un prompt d'extraction structuré.
+    - Parsing structuré avec un modèle Pydantic.
     """
     image_bytes = base64.b64decode(passport_b64)
-    with NamedTemporaryFile(mode="wb") as tmp_img:
-        tmp_img.write(image_bytes)
-        with open(tmp_img.name, "rb") as read_img:
-            mrz_obj = read_mrz(read_img)
-
     image = Image.open(io.BytesIO(image_bytes))
-    enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(2.0)  # 2.0 = double le contraste (1.0 = inchangé)
-    tesseract_text = pytesseract.image_to_string(image, lang='eng')
-    out_dict = {}
-    if not mrz_obj is None:
-        number_raw = str(mrz_obj.number)
-        # It's not called a 'Hack'athon for nothing...
-        number = number_raw.replace("B", "8")
-        out_dict = {
-            "country": mrz_obj.country,
-            "names": mrz_obj.names,
-            "number": number,
-            "surname": mrz_obj.surname,
-            "mrz": mrz_obj.aux["text"],
-        }
-    out_dict["raw"] = tesseract_text
-    out = json.dumps(out_dict)
-    return out
+
+    # Parser structuré basé sur le modèle FromPassport
+    parser = PydanticOutputParser(pydantic_object=FromPassport)
+
+    # Prompt + Instructions pour extraction
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "Tu es un assistant d'extraction de données de passeport."),
+        ("human", "Voici l'image d'un passeport. Extrais les informations dans ce format :\n\n{format_instructions}"),
+    ])
+
+    # LLM avec vision (GPT-4o)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+    chain = prompt | llm.with_structured_output(parser=parser)
+
+    # Appel du LLM avec l'image en contexte
+    result = chain.invoke({
+        "format_instructions": parser.get_format_instructions(),
+        "image": image,
+    })
+
+    return result.json()
