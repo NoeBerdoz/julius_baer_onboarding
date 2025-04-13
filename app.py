@@ -49,6 +49,10 @@ def next_client():
 
     make_decision_request = GameDecisionRequestDTO(decision=decision, client_id=client_id, session_id=session_id)
     res = jb_client.send_decision(make_decision_request)
+
+    if res.status in ['complete', 'gameover']:
+        return res.model_dump_json()
+
     bot_decision = Advisor().make_decision(res.client_data)
 
     res_with_bot_decision = GameDecisionResponseWithBotDecisionDTO(
