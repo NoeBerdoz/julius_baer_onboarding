@@ -7,7 +7,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_openai.chat_models import ChatOpenAI
 from pydantic import BaseModel
 
-from utils.parsers import process_profile, process_passport, process_account
+from utils.parsers import process_profile, process_passport, process_account, process_description
 from validation.from_account import FromAccount
 from validation.from_passport import FromPassport
 from validation.from_profile import FromProfile
@@ -23,9 +23,10 @@ def extract_description(client_data: dict[str, Any]) -> FromDescription:
         "Passport text:\n{processed_text}"
     )
 
+
     result = __run_extraction_chain(
         raw_file_data=passport_data,
-        file_processor=lambda passport_data: passport_data,
+        file_processor=process_description,
         pydantic_model=FromDescription,
         prompt_template=prompt_template,
     )
