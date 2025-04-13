@@ -20,4 +20,4 @@ def process_passport(passport_b64: str) -> str:
     # Extraire le markdown de toutes les pages
     markdown_text = "\n\n".join(page.markdown for page in ocr_response.pages)
 
-    return markdown_text  # Tu peux aussi retourner juste le chemin si tu préfères
+    return markdown_text  # Tu peux aussi retourner juste le chemin si tu préfèresOPENAI_API_KEY
