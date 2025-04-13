@@ -87,45 +87,51 @@ class Advisor:
 
         # 3. Prompt enrichi
         prompt = ChatPromptTemplate.from_template(
-            """You are an experienced compliance analyst at a prestigious private bank. Your role is to carefully examine client applications by cross-checking data from four provided documents: Passport, Profile, Description, and Account.
+            """You are a compliance analyst in a private bank.
+    You are given structured data extracted from four different documents of a new client application.
 
-        Your task:
-        Determine whether to ACCEPT or REJECT the client’s private banking application based on data consistency.
+    Your task is to accept or reject the client's application for private banking.
 
-        CRITICAL RULES for rejection (any single issue means rejection):
-        - Mismatch in personal details: names, surnames must match exactly across all documents.
-        - Typos or spelling errors in critical information.
-        - Expired or incorrect validity dates on passports or other documents.
-        - Non-existent or incorrect addresses, including city, street, zip code, and country.
-        - Conflicting information regarding country of domicile.
-        - Suspicious or implausible personal details.
-        - Financial discrepancies between Profile and Description documents.
-        - Mismatching nationality between Passport and Account documents.
+    Only reject the application if there is an inconsistency in the data provided.
 
-        ADDITIONAL INSTRUCTIONS:
-        - Cross-check the Profile, Description, and Account information meticulously against the Passport.
-        - Historical occupation details may legitimately differ from current data—this alone does not imply inconsistency.
-        - Always verify currency consistency when evaluating monetary amounts.
-        - Be extremely cautious—reject immediately if there's any uncertainty or if any detail appears suspicious.
-        - NEVER fabricate or assume information; rely strictly on provided data.
+    Inconsistencies include:
+    - Incorrect names used accros all docs, what is stated in one of the doc should be true on other documents.
+    - Typos in any fields 
+    - Incorrect validity date passport or documents
+    - Wrong address, city, street name, zip code and country. Some don't exist
+    - Multiple country of domiciles
+    - Implausible or suspicious details
+    - Amounts in profile and the description file
+    - Incorrect nationality regarding the passport data
 
-        RESPOND STRICTLY IN THE FOLLOWING JSON FORMAT:
-        {format_instructions}
+    Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
+    Take into consideration that occupation history might be in the past not match the actual situation.
+    Pay attention to the currency when dealing with amounts.
+    Be highly critical. Reject if there's any doubt or if anything feels wrong.
+    DO NOT HALLUCINATE at any point ! 
 
-        ---
+    Return only JSON matching this format:
+    {format_instructions}
 
-        **Passport Document:**
-        {passport}
+    ---
 
-        **Profile Document:**
-        {profile}
+    **Document: Passport**
+    {passport}
 
-        **Description Document:**
-        {description}
+    ---
 
-        **Account Document:**
-        {account}
-        """
+    **Document: Profile**
+    {profile}
+
+    ---
+
+    **Document: Description**
+    {description}
+
+    ---
+
+    **Document: Account**
+    {account}"""
         )
 
         # 4. Chaîne LLM
