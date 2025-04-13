@@ -93,10 +93,16 @@ class Advisor:
     Your task is to accept or reject the client's application for private banking.
 
     Only reject the application if there is an inconsistency in the data provided.
+    
     Inconsistencies include:
-    - Incorrect data (e.g., mismatched or invalid information)
-    - Incomplete data (e.g., missing required fields)
+    - Incorrect names used accros all docs, what is stated in one of the doc should be true on other documents.
+    - Check for typos
+    - Incorrect validity date passport or documents
+    - Wrong address, city, street name, zip code and country
+    - Only one domicile
     - Implausible or suspicious details
+    - Amounts in profile and the description file
+    - Incorrect nationality regarding the passport data
 
     Use the extracted profile, description, and account details to cross-check the information in the passport and other documents.
     Take into consideration that occupation history might be in the past not match the actual situation.
