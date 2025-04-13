@@ -1,39 +1,50 @@
-# Julius Baer Onboarding
+# Julius Baer - AI-Powered Onboarding Dossier Review
 
-An interactive onboarding simulation system designed for Julius Baer, a decision-based game interface. This project helps users understand client interaction scenarios and decision-making processes in a private banking context.
+**Project for SwissHacks 2025 Hackathon - Challenge by Julius Baer**
 
+## 🎯 The Challenge
 
-## 🔍 Features
+Julius Baer faces challenges in managing the client onboarding process, which involves significant manual effort by employees to analyze and validate new client dossiers. This manual process can be time-consuming and prone to inconsistencies.
 
-- Interactive client scenario simulations
-- AI-powered decision recommendations
-- Real-time scoring and feedback
-- Progress tracking
-- Document processing capabilities
-- Comprehensive validation system
+## 💡 Our Solution
 
-## 🎯 Project Overview
+This project presents an AI-powered system designed to streamline the client onboarding dossier review process for Julius Baer employees. It combines Optical Character Recognition (OCR) and Large Language Model (LLM) reasoning to automatically analyze client documents and provide decision support to the reviewing employee.
 
-The Julius Baer Onboarding Simulation is a full-stack application that:
-- Simulates real-world client interaction scenarios
-- Provides AI-powered decision recommendations
-- Tracks user performance and learning progress
-- Offers an intuitive and engaging user interface
+The system features a user-friendly frontend interface where employees can:
+* View client onboarding documents (Passport, Account Details, Profile, Description).
+* See the AI's analysis and recommendation (Accept/Reject) based on data consistency checks across documents.
+* Make the final decision to validate or refuse the client's dossier.
+
+This aims to reduce manual workload, improve consistency, and potentially speed up the onboarding process.
+
+## 🔍 Key Features
+
+* **AI-Powered Dossier Analysis**: Utilizes OCR and LLM (via services like OpenAI's GPT models) to extract and cross-validate information from various client documents (PNG, PDF, DOCX, TXT).
+* **Frontend Interface**: An interactive web application (built with Alpine.js and Bootstrap) for employees to view documents, AI recommendations, and make final decisions.
+* **Document Handling**: Processes various document formats commonly found in client dossiers.
+* **Decision Support**: Provides employees with AI-generated reasons for accepting or rejecting a dossier based on detected inconsistencies.
+* **Gamified Simulation (Based on API)**: Interacts with the Julius Baer Hackathon API, simulating the process of receiving and deciding on client dossiers in a game-like format.
 
 ## 🏗️ Architecture
 
-### Backend (Python/Flask)
-- RESTful API endpoints for game management
-- Integration with Julius Baer's API
-- AI advisor for decision recommendations
-- Game state management and scoring system
-- OCR capabilities for document processing
+![image](https://github.com/user-attachments/assets/ac0117eb-f3ec-41af-8438-560d96785bff)
 
-### Frontend (Alpine.js & Bootsrap)
-- Modern, responsive user interface
-- Interactive game flow
-- Real-time decision feedback
-- Score tracking and progress visualization
+### Backend (Python/Flask)
+* RESTful API endpoints (`/new-game`, `/next`) to manage the onboarding simulation flow.
+* Integrates with the Julius Baer Hackathon API Client.
+* **AI Advisor Service (`services/advisor.py`)**:
+    * Orchestrates the extraction of data from documents using OCR/parsing utilities (`utils/parsers/`).
+    * Uses LLMs (e.g., GPT-4o via Langchain) to analyze extracted data, check for inconsistencies, and generate Accept/Reject recommendations with reasoning.
+    * Uses Pydantic models (`validation/`) for structured data handling and validation.
+* **Data Extraction Service (`services/extractor.py`)**: Handles the processing of different file types (Passport PNG, Account PDF, Profile DOCX, Description TXT) and interfacing with the LLM for data extraction.
+* Stores game round data and decoded files locally (`utils/storage/game_files_manager.py`).
+
+### Frontend (Alpine.js & Bootstrap)
+* Responsive user interface (`frontend/src/index.html`).
+* Dynamically displays client documents (PNG, PDF, DOCX preview via Mammoth.js, TXT).
+* Shows AI recommendations and reasons.
+* Allows users (employees) to submit Accept/Reject decisions.
+* Manages game state (score, status) received from the backend.
 
 ## ✅ Prerequisites
 
@@ -111,6 +122,9 @@ julius_baer_onboarding/
 ├── game_files/         # Game-related files
 └── tests/              # Test suite
 ```
+
+### Configure Environment Variables  
+Create a .env file based on .env.exemple and add your API keys/settings  
 
 ## 🧪 Development Workflow
 
