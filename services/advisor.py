@@ -96,10 +96,10 @@ class Advisor:
     
     Inconsistencies include:
     - Incorrect names used accros all docs, what is stated in one of the doc should be true on other documents.
-    - Check for typos
+    - Typos in names, passport number, ... 
     - Incorrect validity date passport or documents
-    - Wrong address, city, street name, zip code and country
-    - Only one domicile
+    - Wrong address, city, street name, zip code and country. Some don't exist
+    - Multiple country of domiciles
     - Implausible or suspicious details
     - Amounts in profile and the description file
     - Incorrect nationality regarding the passport data
