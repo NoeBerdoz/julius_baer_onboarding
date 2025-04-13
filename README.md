@@ -7,20 +7,7 @@ This project consists of a Python backend and a JavaScript frontend. The followi
 
 ---
 
-## ✅ Prerequisites
-
-Install the following system dependencies:
-
-- Python 3.12
-- pip
-- virtualenv
-- Node.js (v16+)
-- npm
-- tesseract-ocr
-
----
-
-## 🔧 Installation Steps
+## 🔧 Installing prerequisites
 
 ### 1. Install Python 3.12 and Required Tools
 
@@ -47,10 +34,7 @@ sudo apt install tesseract-ocr
 
 ### 3. Install Node.js and npm
 
-```bash
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-```
+See https://nodejs.org/en/download : Install v20.19.0 or higher
 
 ---
 
@@ -80,13 +64,12 @@ npm install
 cd ..
 ```
 
----
+4. **Setup environment variables**
 
-## 📁 Project Structure
-
-- `requirements.txt` — Python dependencies
-- `.venv/` — Python virtual environment
-- `frontend/` — JavaScript frontend (managed with npm)
+```bash
+cp .env.example .env
+```
+And fill in your values and API keys in the newly created `.env` file.
 
 ---
 
@@ -98,6 +81,12 @@ cd ..
 source .venv/bin/activate
 ```
 
+- To run the backend:
+
+```bash
+python app.py
+```
+
 - To run the frontend:
 
 ```bash
@@ -105,8 +94,4 @@ cd frontend
 npm run dev
 ```
 
-- To run the backend:
-
-```bash
-python app.py
-```
+Then open your browser to http://localhost:5174/ (or the address displayed after running `npm run dev`)
