@@ -126,7 +126,7 @@ def __run_extraction_chain(
 
     prompt = ChatPromptTemplate.from_template(prompt_template)
 
-    chain: Runnable = prompt | ChatOpenAI(model="gpt-4o-mini") | parser
+    chain: Runnable = prompt | ChatOpenAI(model="gpt-4o") | parser
 
     result = chain.invoke({
         "processed_text": processed_text,

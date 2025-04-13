@@ -135,7 +135,7 @@ class Advisor:
         )
 
         # 4. Chaîne LLM
-        chain = prompt | ChatOpenAI(model="gpt-4o-mini") | parser
+        chain = prompt | ChatOpenAI(model="gpt-4o") | parser
 
         # 5. Invocation
         result: AdvisorDecision = chain.invoke({
