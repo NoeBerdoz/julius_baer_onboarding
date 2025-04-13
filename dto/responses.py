@@ -21,7 +21,7 @@ class GameStartResponseWithBotDecisionDTO(BaseModel):
     client_data: Dict[str, Any]
     score: int
     bot_decision: Literal["Accept", "Reject"]
-    bot_reason: str
+    bot_reason: Optional[str]
 
 
 class GameDecisionResponseDTO(BaseModel):
