@@ -48,7 +48,7 @@
             <div class="spinner-border spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            Loading Dossier Data...
+            Processing Customer Data...
         </div>
     </template>
 
@@ -185,7 +185,7 @@
                     <div class="card-body">
                         <template x-if="gameData?.bot_decision === 'Accept'">
                             <div class="alert alert-success p-2 mb-0"
-                                 x-text="gameData.bot_reason || 'Looks fine'"></div>
+                                 x-text="gameData.bot_reason || 'Accept'"></div>
                         </template>
                         <template x-if="gameData?.bot_decision === 'Reject'">
                             <div class="alert alert-danger p-2 mb-0"
