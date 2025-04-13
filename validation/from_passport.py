@@ -9,10 +9,6 @@ class FromPassport(BaseModel):
     These fields represent key identity and document metadata typically found in machine-readable passports.
     """
     model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True)
-    
-    country: str = Field(..., min_length=3, max_length=3)  # ISO 3166-1 alpha-3
-    passport_number: str = Field(..., min_length=9, max_length=9, pattern=r"^[A-Z0-9]{9}$")
-    model_config = ConfigDict(validate_assignment=False, str_strip_whitespace=True)
 
     country: str = Field(
         ...,
