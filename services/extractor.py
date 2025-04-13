@@ -13,25 +13,10 @@ from validation.from_passport import FromPassport
 from validation.from_profile import FromProfile
 from validation.from_description import FromDescription
 
-def extract_description(client_data: dict[str, Any]) -> FromDescription:
-    passport_data = client_data.get("description")
-
-    prompt_template = (
-        "Extract the following information from the provided passport text.\n"
-        "Return only JSON matching this format:\n{format_instructions}\n\n"
-        "Pay special attention to the passport number\n"
-        "Passport text:\n{processed_text}"
-    )
-
-
-    result = __run_extraction_chain(
-        raw_file_data=passport_data,
-        file_processor=process_description,
-        pydantic_model=FromDescription,
-        prompt_template=prompt_template,
-    )
-
-    return result
+def extract_description(client_data: dict[str, Any]) -> dict[str, str]:
+    description_data = client_data.get("description")
+    parsed_data = process_description(description_data)
+    return parsed_data
 
 def extract_account(client_data: dict[str, Any])-> FromAccount:
     account_data = client_data.get("account")
