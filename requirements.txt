@@ -44,3 +44,5 @@ langchain-openai
 numpy==2.2.4
 pymupdf == 1.25.5
 flask-cors==5.0.1
+mistralai==1.6.0
+
