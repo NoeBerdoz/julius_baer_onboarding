@@ -175,7 +175,7 @@
                                 x-text="gameData?.session_id || 'N/A'"></code></p>
                         <p class="mb-1"><strong>Score:</strong> <code x-text="gameData?.score || '0'"></code></p>
                         <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info"
-                                                                       x-text="gameData?.status || 'N/A'"></span></p>
+                                                                       x-text="gameData?.status || 'active'"></span></p>
                     </div>
                 </div>
                 <div class="card shadow-sm mb-3">
@@ -225,6 +225,25 @@
                         <template x-if="gameData?.status === 'complete'">
                             <div class="alert alert-warning mb-0">
                                 All dossiers processed!
+                            </div>
+                        </template>
+                        <!-- Game Over Modal -->
+                        <template x-if="gameData?.status === 'gameover'">
+                            <div class="modal fade show d-block" tabindex="-1"
+                                 style="background-color: rgba(0,0,0,0.7);" role="dialog" aria-modal="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content text-center">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title w-100">Game Over</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="fs-5">Wrong decision made</p>
+                                            <p class="fs-5">Score: <span x-text="gameData?.score"></span></p>
+                                            <button class="btn btn-primary" @click="startNewGame()">Try Again
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>
