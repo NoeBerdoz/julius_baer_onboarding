@@ -1,29 +1,60 @@
-# julius_baer_onboarding
+# Julius Baer Onboarding
+
+An interactive onboarding simulation system designed for Julius Baer, a decision-based game interface. This project helps users understand client interaction scenarios and decision-making processes in a private banking context.
 
 
-# Project Setup Guide (Ubuntu Linux)
+## 🔍 Features
 
-This project consists of a Python backend and a JavaScript frontend. The following instructions describe how to set up the development environment manually on Ubuntu.
+- Interactive client scenario simulations
+- AI-powered decision recommendations
+- Real-time scoring and feedback
+- Progress tracking
+- Document processing capabilities
+- Comprehensive validation system
 
----
+## 🎯 Project Overview
 
-## 🔧 Installing prerequisites
+The Julius Baer Onboarding Simulation is a full-stack application that:
+- Simulates real-world client interaction scenarios
+- Provides AI-powered decision recommendations
+- Tracks user performance and learning progress
+- Offers an intuitive and engaging user interface
 
-### 1. Install Python 3.12 and Required Tools
+## 🏗️ Architecture
+
+### Backend (Python/Flask)
+- RESTful API endpoints for game management
+- Integration with Julius Baer's API
+- AI advisor for decision recommendations
+- Game state management and scoring system
+- OCR capabilities for document processing
+
+### Frontend (Alpine.js & Bootsrap)
+- Modern, responsive user interface
+- Interactive game flow
+- Real-time decision feedback
+- Score tracking and progress visualization
+
+## ✅ Prerequisites
+
+Install the following system dependencies:
+
+- Python 3.12
+- pip
+- virtualenv
+- Node.js (v16+)
+- npm
+- tesseract-ocr
+
+## 🔧 Installation Steps
+
+### 1. Install Python 3.11+ and Required Tools
 
 #### For Ubuntu 22.04+
 
 ```bash
 sudo apt update
-sudo apt install python3.12 python3.12-venv python3.12-dev
-```
-
-#### For Ubuntu 20.04
-
-```bash
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install python3.12 python3.12-venv python3.12-dev
+sudo apt install python3.11 python3.11-venv python3.11-dev
 ```
 
 ### 2. Install Tesseract OCR
@@ -34,9 +65,10 @@ sudo apt install tesseract-ocr
 
 ### 3. Install Node.js and npm
 
-See https://nodejs.org/en/download : Install v20.19.0 or higher
-
----
+```bash
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+```
 
 ## 🚀 Project Setup
 
@@ -64,34 +96,35 @@ npm install
 cd ..
 ```
 
-4. **Setup environment variables**
+## 📁 Project Structure
 
-```bash
-cp .env.example .env
 ```
-And fill in your values and API keys in the newly created `.env` file.
-
----
+julius_baer_onboarding/
+├── app.py                 # Main Flask application
+├── config.py             # Configuration settings
+├── requirements.txt      # Python dependencies
+├── frontend/            # Frontend application
+├── services/            # Backend services
+├── dto/                 # Data Transfer Objects
+├── validation/          # Validation logic
+├── utils/              # Utility functions
+├── game_files/         # Game-related files
+└── tests/              # Test suite
+```
 
 ## 🧪 Development Workflow
 
-- Activate the Python virtual environment:
+1. **Start the backend server**
 
 ```bash
 source .venv/bin/activate
-```
-
-- To run the backend:
-
-```bash
 python app.py
 ```
 
-- To run the frontend:
+2. **Start the frontend development server**
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Then open your browser to http://localhost:5174/ (or the address displayed after running `npm run dev`)
