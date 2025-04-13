@@ -8,6 +8,7 @@ from dto.requests import GameStartRequestDTO, GameDecisionRequestDTO
 from dto.responses import GameStartResponseWithBotDecisionDTO, GameDecisionResponseWithBotDecisionDTO
 from services.julius_baer_api_client import JuliusBaerApiClient
 from services.advisor import Advisor
+from utils.storage.game_files_manager import store_game_round_data
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(module)s] - %(message)s')
@@ -31,6 +32,8 @@ def new_game():
         bot_decision=bot_decision.answer,
         bot_reason=bot_decision.reason,
     )
+
+    store_game_round_data(bot_decision.answer, res_with_bot_decision, res.score, str(res.session_id), 'active')
 
     return res_with_bot_decision.model_dump_json()
 
@@ -56,6 +59,8 @@ def next_client():
         bot_decision=bot_decision.answer,
         bot_reason=bot_decision.reason,
     )
+
+    store_game_round_data(bot_decision.answer, res_with_bot_decision, res.score, str(session_id), res.status)
 
     return res_with_bot_decision.model_dump_json()
 

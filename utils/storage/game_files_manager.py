@@ -6,12 +6,16 @@ import json
 from typing import Dict, Any
 from pathlib import Path
 
-from dto.responses import GameStartResponseDTO, GameDecisionResponseDTO
+from dto.responses import GameStartResponseWithBotDecisionDTO, GameDecisionResponseWithBotDecisionDTO
 
 GAME_FILES_DIR = config.GAME_FILES_DIR
 
 # Define padding for round numbers (e.g., 6 digits for up to 999,999 rounds)
 FOLDER_ROUND_PADDING = 6
+
+############################
+# WARNING - Technical Debt #
+############################
 
 
 def _get_previous_round_folder(current_round: int, session_id: str) -> str | None:
@@ -83,7 +87,7 @@ def store_decoded_files(response: Dict[str, Any] | None, directory: str):
                     logging.error(f"[!] Unexpected error saving file '{key}{extension}' in {directory}: {e}")
 
 
-def store_game_round_data(decision: str, response: GameStartResponseDTO | GameDecisionResponseDTO, round_number: int,
+def store_game_round_data(decision: str, response: GameStartResponseWithBotDecisionDTO | GameDecisionResponseWithBotDecisionDTO, round_number: int,
                           session_id: str, status: str):
     """
         Logs structured response data and saves associated client files.
