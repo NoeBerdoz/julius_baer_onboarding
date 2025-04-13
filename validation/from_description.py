@@ -1,35 +1,32 @@
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional # Removed Literal
+from pydantic import BaseModel, ConfigDict # Removed Field
 
 
 class FromDescription(BaseModel):
     """
-    Fields which can be extracted from description.txt
+    Fields which can be extracted from description.txt - All fields optional and simplified to string.
     """
     model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True)
 
-    
-    full_name: str = Field(..., min_length=1)
-    age: int = Field(..., ge=0, le=120)
-    nationality: str = Field(..., min_length=1)
+    full_name: Optional[str] = None
+    age: Optional[str] = None # Simplified from int
+    nationality: Optional[str] = None
+    marital_status: Optional[str] = None # Simplified from Literal
+    has_children: Optional[str] = None # Simplified from bool
 
-    marital_status: Literal["single", "married", "divorced", "widowed"]
-    has_children: bool
+    secondary_education_school: Optional[str] = None
+    secondary_education_year: Optional[str] = None # Simplified from int
+    university_name: Optional[str] = None
+    university_graduation_year: Optional[str] = None # Simplified from int
 
-    secondary_education_school: str
-    secondary_education_year: int = Field(..., ge=1900, le=2100)
-    university_name: str
-    university_graduation_year: int = Field(..., ge=1900, le=2100)
+    occupation_title: Optional[str] = None
+    employer: Optional[str] = None
+    start_year: Optional[str] = None # Simplified from int
+    annual_salary_eur: Optional[str] = None # Simplified from float
 
-    occupation_title: str
-    employer: str
-    start_year: int = Field(..., ge=1900, le=2100)
-    annual_salary_eur: float = Field(..., ge=0)
+    total_savings_eur: Optional[str] = None # Simplified from float
+    has_properties: Optional[str] = None # Simplified from bool
 
-    total_savings_eur: float = Field(..., ge=0)
-    has_properties: bool
-
-    inheritance_amount_eur: float = Field(..., ge=0)
-    inheritance_year: int = Field(..., ge=1900, le=2100)
-    inheritance_source: str
-
+    inheritance_amount_eur: Optional[str] = None # Simplified from float
+    inheritance_year: Optional[str] = None # Simplified from int
+    inheritance_source: Optional[str] = None

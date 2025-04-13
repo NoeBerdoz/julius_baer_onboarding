@@ -1,65 +1,67 @@
-from datetime import date
-from typing import List, Literal, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from typing import Optional # Keep Optional, remove others
+from pydantic import BaseModel, ConfigDict # Removed Field
 
 
 class FromProfile(BaseModel):
     """
-    Fields which can be extracted from description.txt
+    Fields which can be extracted from description.txt - All fields optional and simplified to string where possible.
     """
-    model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True)
+    model_config = ConfigDict(validate_assignment=True, str_strip_whitespace=True) # Keep config if needed
 
-    first_name: str = Field(..., min_length=1)
-    last_name: str = Field(..., min_length=1)
-    date_of_birth: date
-    nationality: str
-    country_of_domicile: str
-    gender: Literal["Female", "Male"]
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    date_of_birth: Optional[str] = None # Simplified from date
+    nationality: Optional[str] = None
+    country_of_domicile: Optional[str] = None
+    gender: Optional[str] = None # Simplified from Literal
 
     # ID information
-    passport_number: str = Field(..., min_length=9, max_length=9, pattern=r"^[A-Z0-9]{9}$")
-    id_type: Literal["passport"]
-    id_issue_date: date
-    id_expiry_date: date
+    passport_number: Optional[str] = None # Simplified, removed Field constraints
+    id_type: Optional[str] = None # Simplified from Literal
+    id_issue_date: Optional[str] = None # Simplified from date
+    id_expiry_date: Optional[str] = None # Simplified from date
 
     # Contact
-    phone: str = Field(..., min_length=8)
-    email: str = Field(min_length=5)
-    address: str
+    phone: Optional[str] = None # Simplified, removed Field constraints
+    email: Optional[str] = None # Simplified, removed Field constraints
+    address: Optional[str] = None
 
     # Personal info
-    politically_exposed_person: bool
-    marital_status: Literal["Single", "Married", "Divorced", "Widowed"]
-    highest_education: Literal["Tertiary", "Secondary", "Primary", "None"]
+    politically_exposed_person: Optional[str] = None # Simplified from bool
+    marital_status: Optional[str] = None # Simplified from Literal
+    highest_education: Optional[str] = None # Simplified from Literal
     education_history: Optional[str] = None
 
     # Employment
-    employment_status: Literal["Employee", "Self-Employed", "Unemployed", "Retired", "Student", "Diplomat", "Military", "Homemaker", "Other"]
-    employment_since: Optional[int] = None
+    employment_status: Optional[str] = None # Simplified from Literal
+    employment_since: Optional[str] = None # Simplified from int
     employer: Optional[str] = None
     position: Optional[str] = None
-    annual_salary_eur: Optional[float] = None
+    annual_salary_eur: Optional[str] = None # Simplified from float
 
     # Wealth background
-    total_wealth_range: Literal["<1.5m", "1.5m-5m", "5m-10m", "10m-20m", "20m-50m", ">50m"]
-    origin_of_wealth: List[Literal["Employment", "Inheritance", "Business", "Investments", "Sale of real estate", "Retirement package", "Other"]]
+    total_wealth_range: Optional[str] = None # Simplified from Literal
+    # List types are often handled differently; simplifying to a single string might lose info.
+    # Keeping as Optional[str] based on request, but consider if Optional[List[str]] = None is better long-term.
+    origin_of_wealth: Optional[str] = None # Simplified from List[Literal]
     inheritance_details: Optional[str] = None
 
     # Assets
-    business_assets_eur: float = Field(..., ge=0)
+    business_assets_eur: Optional[str] = None # Simplified from float, removed Field constraint
 
     # Income
-    estimated_annual_income: Literal["<250k", "250k-500k", "500k-1m", ">1m"]
-    income_country: str
+    estimated_annual_income: Optional[str] = None # Was already Optional[str]
+    income_country: Optional[str] = None
 
     # Account preferences
-    commercial_account: bool
-    investment_risk_profile: Literal["Low", "Moderate", "Considerable", "High"]
-    mandate_type: Literal["Advisory", "Discretionary"]
-    investment_experience: Literal["Inexperienced", "Experienced", "Expert"]
-    investment_horizon: Literal["Short", "Medium", "Long-Term"]
-    preferred_markets: List[str]
+    commercial_account: Optional[str] = None # Simplified from bool
+    investment_risk_profile: Optional[str] = None # Simplified from Literal
+    mandate_type: Optional[str] = None # Simplified from Literal
+    investment_experience: Optional[str] = None # Simplified from Literal
+    investment_horizon: Optional[str] = None # Simplified from Literal
+     # Keeping as Optional[str] based on request, but consider if Optional[List[str]] = None is better long-term.
+    preferred_markets: Optional[str] = None # Simplified from List[str]
 
     # Assets under management
-    total_aum: float
-    aum_to_transfer: float
+    total_aum: Optional[str] = None # Simplified from float
+    aum_to_transfer: Optional[str] = None # Simplified from float

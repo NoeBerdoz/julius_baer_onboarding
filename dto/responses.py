@@ -38,4 +38,4 @@ class GameDecisionResponseWithBotDecisionDTO(BaseModel):
     client_id: Optional[UUID] = None
     client_data: Optional[Dict[str, Any]] = None
     bot_decision: Literal["Accept", "Reject"]
-    bot_reason: str
+    bot_reason: Optional[str]
